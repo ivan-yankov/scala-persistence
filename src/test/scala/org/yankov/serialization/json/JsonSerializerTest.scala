@@ -1,9 +1,11 @@
 package org.yankov.serialization.json
+
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.io.Source
 
 class JsonSerializerTest extends WordSpec with Matchers {
+
   case class Dependency(id: String, description: String)
 
   case class Pair(id: Int, dependency: Dependency)

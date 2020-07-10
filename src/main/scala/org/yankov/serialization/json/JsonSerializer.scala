@@ -5,9 +5,13 @@ import java.util.Base64
 import org.slf4j.LoggerFactory
 
 trait JsonType
+
 case class JsonObject(value: Product) extends JsonType
+
 case class JsonArray(value: Seq[_]) extends JsonType
+
 case class JsonValue(value: Any) extends JsonType
+
 case object JsonNull extends JsonType
 
 object JsonSerializer {
@@ -76,12 +80,12 @@ object JsonSerializer {
   }
 
   private def serializeItem(item: JsonType): String = item match {
-      case JsonValue(value) => valueToString(value)
-      case JsonArray(value) => collectionToString(value)
-      case JsonObject(value) => objectToString(value)
-      case JsonNull => `null`
-      case _ => `null`
-    }
+    case JsonValue(value) => valueToString(value)
+    case JsonArray(value) => collectionToString(value)
+    case JsonObject(value) => objectToString(value)
+    case JsonNull => `null`
+    case _ => `null`
+  }
 
   private def printDouble(d: Double): String = String.format(s"%.${numberOfDecimalPlaces}f", d)
 
