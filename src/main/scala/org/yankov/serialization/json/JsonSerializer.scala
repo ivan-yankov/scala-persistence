@@ -2,41 +2,26 @@ package org.yankov.serialization.json
 
 import java.util.Base64
 
-import org.slf4j.LoggerFactory
-
-trait JsonType
-
-case class JsonObject(value: Product) extends JsonType
-
-case class JsonArray(value: Seq[_]) extends JsonType
-
-case class JsonValue(value: Any) extends JsonType
-
-case object JsonNull extends JsonType
+import org.yankov.serialization.json.JsonDataModel._
 
 object JsonSerializer {
-  type Bytes = Array[Byte]
-
-  private val log = LoggerFactory.getLogger(JsonSerializer.getClass)
   private val numberOfDecimalPlaces = 16
-  private val elementSeparator = ","
-  private val `null` = "null"
 
   def toJson(obj: Product): String = {
     objectToString(obj)
   }
 
-  private def determineJsonType(x: Any): JsonType = x match {
-    case value: Short => JsonValue(value)
-    case value: Int => JsonValue(value)
-    case value: Long => JsonValue(value)
-    case value: Float => JsonValue(value)
-    case value: Double => JsonValue(value)
-    case value: Char => JsonValue(value)
-    case value: Boolean => JsonValue(value)
-    case value: Byte => JsonValue(value)
-    case value: Bytes => JsonValue(value)
-    case value: String => JsonValue(value)
+  private def determineJsonType(x: Any): JsonElement = x match {
+    case value: Short => JsonInteger(value)
+    case value: Int => JsonInteger(value)
+    case value: Long => JsonInteger(value)
+    case value: Float => JsonDecimal(value)
+    case value: Double => JsonDecimal(value)
+    case value: Char => JsonString(value.toString)
+    case value: Boolean => JsonBoolean(value)
+    case value: Byte => JsonBytes(Array(value))
+    case value: Bytes => JsonBytes(value)
+    case value: String => JsonString(value)
     case value: Seq[_] => JsonArray(value)
     case value: List[_] => JsonArray(value)
     case value: Vector[_] => JsonArray(value)
@@ -45,51 +30,38 @@ object JsonSerializer {
     case _ => JsonNull
   }
 
-  private def valueToString(x: Any): String = x match {
-    case value: Short => value.toString
-    case value: Int => value.toString
-    case value: Long => value.toString
-    case value: Float => printDouble(value)
-    case value: Double => printDouble(value)
-    case value: Boolean => if (value) "true" else "false"
-    case value: Char => wrapInQuotes(value.toString)
-    case value: Byte => wrapInQuotes(encodeBytes(Seq(value)))
-    case value: Bytes => wrapInQuotes(encodeBytes(value))
-    case value: String => wrapInQuotes(value)
-    case value =>
-      log.error(s"Type [${x.getClass.getName}] is not a value")
-      value.toString
-  }
-
-  private def collectionToString(items: Seq[_]): String = {
-    val r = items
-      .map(x => serializeItem(determineJsonType(x)))
-      .mkString(elementSeparator)
-    s"[$r]"
+  private def jsonElementToString(x: JsonElement): String = x match {
+    case JsonInteger(value) => value.toString
+    case JsonDecimal(value) => printDouble(value)
+    case JsonBoolean(value) => if (value) "true" else "false"
+    case JsonString(value) => wrapInQuotes(value)
+    case JsonBytes(value) => wrapInQuotes(encodeBytes(value))
+    case JsonObject(value) => objectToString(value)
+    case JsonArray(value) => collectionToString(value)
+    case JsonNull => JsonConstants.`null`
   }
 
   private def objectToString(value: Product): String = {
-    def printPair(key: String, value: String) = s"$key:$value"
+    def printPair(key: String, value: String) = s"$key${JsonConstants.keyValueSeparator}$value"
 
     val r = Range(0, value.productIterator.size)
       .toList
       .map(x => (value.productElementName(x), value.productElement(x)))
-      .map(x => printPair(wrapInQuotes(x._1), serializeItem(determineJsonType(x._2))))
-      .mkString(elementSeparator)
+      .map(x => printPair(wrapInQuotes(x._1), jsonElementToString(determineJsonType(x._2))))
+      .mkString(JsonConstants.elementSeparator)
     s"{$r}"
   }
 
-  private def serializeItem(item: JsonType): String = item match {
-    case JsonValue(value) => valueToString(value)
-    case JsonArray(value) => collectionToString(value)
-    case JsonObject(value) => objectToString(value)
-    case JsonNull => `null`
-    case _ => `null`
+  private def collectionToString(items: Seq[_]): String = {
+    val r = items
+      .map(x => jsonElementToString(determineJsonType(x)))
+      .mkString(JsonConstants.elementSeparator)
+    s"[$r]"
   }
 
   private def printDouble(d: Double): String = String.format(s"%.${numberOfDecimalPlaces}f", d)
 
-  private def encodeBytes(bytes: Seq[Byte]): String = Base64.getEncoder.withoutPadding.encodeToString(bytes.toArray)
+  private def encodeBytes(bytes: Bytes): String = Base64.getEncoder.withoutPadding.encodeToString(bytes)
 
   private def wrapInQuotes(str: String): String = s""""$str""""
 }
