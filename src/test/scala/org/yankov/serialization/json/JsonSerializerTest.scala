@@ -72,9 +72,14 @@ class JsonSerializerTest extends WordSpec with Matchers {
     result shouldBe Source.fromResource("serialization-expected.json").getLines.toList.head
   }
 
-  "json serialization with deep recursion should succeed" in {
-    val entity = createEntity(500)
+  "json serialization with recursion should succeed" in {
+    val entity = createEntity(5)
     val result = JsonSerializer.toJson(entity)
-    result shouldBe Source.fromResource("serialization-deep-recursion-expected.json").getLines.toList.head
+    result shouldBe Source.fromResource("serialization-recursion-expected.json").getLines.toList.head
+  }
+
+  "json serialization with deep recursion should not throw StackOverflowException" in {
+    val entity = createEntity(400)
+    JsonSerializer.toJson(entity)
   }
 }
