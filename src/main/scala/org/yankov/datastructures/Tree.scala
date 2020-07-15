@@ -1,36 +1,31 @@
 package org.yankov.datastructures
 
-case class Node[K, T](key: K, data: Option[T], children: List[Node[K, T]])
+case class Node[T](data: Option[T], children: List[Node[T]])
 
-case class Tree[K, T](root: Node[K, T]) {
-  type NodeType = Node[K, T]
-
-  def find(matcher: NodeType => Boolean): Option[NodeType] = {
-    val k = traverse(root, List(), matcher, Map())
-      .find(x => x._2)
-      .get._1
-    find(k)
-  }
-
-  def find(key: K): Option[NodeType] = {
-    traverse(
-      root,
-      List(),
-      x => if (x.key.equals(key)) Option(x) else Option.empty,
-      Map())
-      .find(x => x._2.isDefined)
-      .get._2
-  }
-
-  def add(parent: NodeType, child: NodeType): Tree[K, T] = ???
+case class Tree[T](root: Node[T]) {
+  type NodeType = Node[T]
 
   @scala.annotation.tailrec
-  private def traverse[R](node: NodeType, acc: List[NodeType], f: NodeType => R, rAcc: Map[K, R]): Map[K, R] = {
-    val newResultAcc = rAcc + (node.key -> f(node))
+  final def traverse[R](f: NodeType => R,
+                        node: NodeType = root,
+                        acc: List[NodeType] = List(),
+                        rAcc: List[(NodeType, R)] = List()): List[(NodeType, R)] = {
+    val newResultAcc = (node, f(node)) :: rAcc
     (node.children, acc) match {
       case (Nil, Nil) => newResultAcc
-      case (Nil, x :: rest) => traverse(x, rest, f, newResultAcc)
-      case (child :: otherChildren, xs) => traverse(child, otherChildren ++ xs, f, newResultAcc)
+      case (Nil, x :: rest) => traverse(f, x, rest, newResultAcc)
+      case (child :: otherChildren, xs) => traverse(f, child, otherChildren ++ xs, newResultAcc)
     }
   }
+
+  def printToString(printNode: NodeType => String): String = {
+    traverse(x => printNode(x)).map(x => x._2).reverse.mkString("\n")
+  }
+
+  def find(matcher: NodeType => Boolean): Option[NodeType] = {
+    val result = traverse(matcher).find(x => x._2)
+    if (result.isDefined) Option(result.get._1) else Option.empty
+  }
+
+  def add(parent: NodeType, child: NodeType): Tree[T] = ???
 }
