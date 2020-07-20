@@ -14,7 +14,7 @@ case class Tree[T](root: Node[T]) {
     (node.children, acc) match {
       case (Nil, Nil) => newResultAcc
       case (Nil, x :: rest) => traverse(f, x, rest, newResultAcc)
-      case (child :: otherChildren, xs) => traverse(f, child, otherChildren ++ xs, newResultAcc)
+      case (child :: otherChildren, xs) => traverse(f, child, otherChildren.appendedAll(xs), newResultAcc)
     }
   }
 
