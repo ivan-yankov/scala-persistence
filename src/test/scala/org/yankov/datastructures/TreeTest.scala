@@ -45,4 +45,13 @@ class TreeTest extends WordSpec with Matchers {
   "find should fail to find node, which does not exist" in {
     createTree.find(x => x.data.get.equals("SOMETHING")).isEmpty shouldBe true
   }
+
+  "flat should succeed and return list of nodes with corresponding levels in the tree" in {
+    val result = createTree.flat.map(x => (x._1, x._2.data.get))
+    result.size shouldBe 15
+    result.filter(x => x._1 == 0).map(x => x._2) shouldBe List("ROOT")
+    result.filter(x => x._1 == 1).map(x => x._2).forall(x => x.startsWith("A")) shouldBe true
+    result.filter(x => x._1 == 2).map(x => x._2).forall(x => x.startsWith("B")) shouldBe true
+    result.filter(x => x._1 == 3).map(x => x._2).forall(x => x.startsWith("C")) shouldBe true
+  }
 }
