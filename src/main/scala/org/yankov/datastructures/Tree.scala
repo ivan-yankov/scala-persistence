@@ -27,7 +27,7 @@ case class Tree[T](root: Node[T]) {
       else indent(level - 1, s"$acc$indentation")
     }
 
-    flat.map(x => s"${indent(x.level)}${printNode(x.node)}").mkString("\n")
+    flat().map(x => s"${indent(x.level)}${printNode(x.node)}").mkString("\n")
   }
 
   def find(matcher: Node[T] => Boolean): Option[Node[T]] = {
@@ -35,7 +35,7 @@ case class Tree[T](root: Node[T]) {
     if (result.isDefined) Option(result.get._1) else Option.empty
   }
 
-  def flat: List[FlattenNode[T]] = {
+  def flat(rootLevel: Int = 0, rootIndex: Int = 0, rootParentIndex: Int = -1): List[FlattenNode[T]] = {
     @tailrec
     def iterate(nodes: List[Node[T]], acc: List[FlattenNode[T]]): List[FlattenNode[T]] = {
       if (nodes.isEmpty) acc
@@ -55,10 +55,12 @@ case class Tree[T](root: Node[T]) {
     }
 
     val nodes = traverse(x => x).map(x => x._1).reverse
-    iterate(nodes.tail, List(FlattenNode(0, 0, -1, nodes.head)))
+    iterate(nodes.tail, List(FlattenNode(rootLevel, rootIndex, rootParentIndex, nodes.head)))
   }
 
-  def add(parent: Node[T], child: Node[T]): Tree[T] = ???
+  def merge(parentMatch: Node[T] => Boolean, that: Tree[T]): Tree[T] = {
+    ???
+  }
 }
 
 object Tree {
