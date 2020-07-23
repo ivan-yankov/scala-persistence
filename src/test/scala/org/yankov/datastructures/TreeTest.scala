@@ -3,21 +3,24 @@ package org.yankov.datastructures
 import org.scalatest.{Matchers, WordSpec}
 
 class TreeTest extends WordSpec with Matchers {
-  private def createTree(prefix: String = ""): Tree[String] = {
-    val c = List.tabulate(8)(x => Node(Option(s"${prefix}C$x"), List()))
+  implicit def sortChildren: (Node[String], Node[String]) => Boolean =
+    (x, y) => x.data.get.compareTo(y.data.get) <= 0
+
+  private def createTree(): Tree[String] = {
+    val c = List.tabulate(8)(x => Node(Option(s"C$x"), List()))
     val bChildren = List(
       List(c.head, c(1), c(2)),
       List(c(3), c(4), c(5)),
       List(c(6), c(7))
     )
-    val b = List.tabulate(3)(x => Node(Option(s"${prefix}B$x"), bChildren(x)))
+    val b = List.tabulate(3)(x => Node(Option(s"B$x"), bChildren(x)))
     val aChildren = List(
       List(b.head, b(1)),
       List(b(2)),
       List()
     )
-    val a = List.tabulate(3)(x => Node(Option(s"${prefix}A$x"), aChildren(x)))
-    Tree(Node(Option(s"${prefix}ROOT"), a))
+    val a = List.tabulate(3)(x => Node(Option(s"A$x"), aChildren(x)))
+    Tree(Node(Option(s"ROOT"), a))
   }
 
   private def createMergedTree1: Tree[String] = {
@@ -37,7 +40,7 @@ class TreeTest extends WordSpec with Matchers {
     )
     val bChildren = List(
       List(c.head, c(1), c(2)),
-      List(c(3), c(4), c(5), Node(Option("B1C"), List())),
+      List(Node(Option("B1C"), List()), c(3), c(4), c(5)),
       List(c(6), c(7))
     )
     val b = List.tabulate(3)(x => Node(Option(s"B$x"), bChildren(x)))
@@ -51,7 +54,7 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   private def createMergedTree2: Tree[String] = {
-    val subTree = createTree("SUB_")
+    val subTree = createTree()
 
     val c = List.tabulate(8)(x => Node(Option(s"C$x"), List()))
     val bChildren = List(
@@ -87,10 +90,6 @@ class TreeTest extends WordSpec with Matchers {
       FlattenNode(3, 13, 11, Node(Option("C7"), List())),
       FlattenNode(1, 14, 0, Node(Option("A2"), List()))
     )
-  }
-
-  "traverse should succeed" in {
-    createTree().traverse(x => x.data.get).map(x => x._2) shouldBe List("A2", "C7", "C6", "B2", "A1", "C5", "C4", "C3", "B1", "C2", "C1", "C0", "B0", "A0", "ROOT")
   }
 
   "printToString should succeed" in {
@@ -133,6 +132,11 @@ class TreeTest extends WordSpec with Matchers {
     result.find(x => x._2.equals("C7")).get._1 shouldBe List(3, 13, 11)
   }
 
+  "flat subtree should succeed" in {
+    val flatten = createTree().merge(x => x.data.get.equals("B0"), createTree()).flat()
+    Tree.build(flatten) shouldBe createMergedTree2
+  }
+
   "build should succeed" in {
     Tree.build(createFlattenTree) shouldBe createTree()
   }
@@ -159,7 +163,7 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "merge should succeed in merging subtree" in {
-    createTree().merge(x => x.data.get.equals("B0"), createTree("SUB_")) shouldBe createMergedTree2
+    createTree().merge(x => x.data.get.equals("B0"), createTree()) shouldBe createMergedTree2
   }
 
   "merge should return same tree if parent is not found" in {
