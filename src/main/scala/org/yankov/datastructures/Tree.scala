@@ -39,7 +39,7 @@ case class Tree[T](root: Node[T],
     }
   }
 
-  def printToString(printNode: Node[T] => String, indentation: String = "  "): String = {
+  def printToString(printNode: Node[T] => String, indentation: String = ""): String = {
     @tailrec
     def indent(level: Int, node: String, acc: String = ""): String = {
       if (level == 0) s"$acc$node"

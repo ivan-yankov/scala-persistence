@@ -89,7 +89,7 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "printToString should succeed" in {
-    createTree().printToString(x => x.data.name) shouldBe "ROOT\n  A0\n    B0\n      C0\n      C1\n      C2\n    B1\n      C3\n      C4\n      C5\n  A1\n    B2\n      C6\n      C7\n  A2"
+    createTree().printToString(x => x.data.name, "  ") shouldBe "ROOT\n  A0\n    B0\n      C0\n      C1\n      C2\n    B1\n      C3\n      C4\n      C5\n  A1\n    B2\n      C6\n      C7\n  A2"
   }
 
   "find should succeed for all nodes" in {
