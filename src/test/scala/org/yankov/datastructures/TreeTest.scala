@@ -104,7 +104,7 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "flat should succeed and return list of nodes with corresponding flatten key in the tree" in {
-    val result = createTree().flat().map(x => (List(x.level, x.index, x.parentIndex), x.node.data.name))
+    val result = createTree().flat().nodes.map(x => (List(x.level, x.index, x.parentIndex), x.node.data.name))
 
     result.size shouldBe 15
 
@@ -129,12 +129,11 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "flat subtree should succeed" in {
-    val flatten = createTree().merge(x => x.name.equals("B0"), createTree()).flat()
-    Tree.build(flatten, getChildren, aggregate).root shouldBe createMergedTree2.root
+    createTree().merge(x => x.name.equals("B0"), createTree()).flat().build().root shouldBe createMergedTree2.root
   }
 
   "build should succeed" in {
-    Tree.build(createTree().flat(), getChildren, aggregate).root shouldBe createTree().root
+    createTree().flat().build().root shouldBe createTree().root
   }
 
   "merge should succeed in chain merges" in {
