@@ -79,7 +79,7 @@ class JsonSerializerTest extends WordSpec with Matchers {
   }
 
   "json serialization with deep recursion should not throw StackOverflowException" in {
-    val entity = createEntity(400)
+    val entity = createEntity(1000)
     JsonSerializer.toJson(entity)
   }
 }
