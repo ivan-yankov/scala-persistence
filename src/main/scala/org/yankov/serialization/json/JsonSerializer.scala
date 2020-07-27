@@ -9,38 +9,16 @@ import org.yankov.serialization.json.JsonDataModel._
 object JsonSerializer {
   private val numberOfDecimalPlaces = 16
 
-  def toJson(obj: Product): String = {
-    def toFlattenNodeString(x: FlattenNode[JsonNode], toString: Any => String): FlattenNode[JsonNodeString] =
-      FlattenNode(x.level, x.index, x.parentIndex, Node(JsonNodeString(x.node.data.name, toString(x.node.data.value))))
+  implicit def getJsonNodeStringChildren(node: Node[JsonNodeString]): List[Node[JsonNodeString]] = List()
 
-    val jsonStrings = Tree(Node(JsonNode("", obj)), getJsonNodeChildren, aggregateJsonNodes)
-      .flat()
-      .nodes
-      .map(x => x.node.data.value match {
-        case _: Seq[_] => toFlattenNodeString(x, toJsonString)
-        case _: List[_] => toFlattenNodeString(x, toJsonString)
-        case _: Set[_] => toFlattenNodeString(x, toJsonString)
-        case _: Array[_] => toFlattenNodeString(x, toJsonString)
-        case _: Option[Nothing] => toFlattenNodeString(x, _ => wrapJsonObject(""))
-        case _: Product => toFlattenNodeString(x, _ => "product")
-        case _ => toFlattenNodeString(x, toJsonString)
-      })
-
-    FlattenTree(jsonStrings, getJsonNodeStringChildren, aggregateJsonNodeStrings)
-      .build()
-      .root
-      .data
-      .value
-  }
-
-  private def getJsonNodeStringChildren(node: Node[JsonNodeString]): List[Node[JsonNodeString]] = List()
-
-  private def aggregateJsonNodeStrings(parent: Node[JsonNodeString], children: List[Node[JsonNodeString]]): Node[JsonNodeString] = {
+  implicit def aggregateJsonNodeStrings(parent: Node[JsonNodeString], children: List[Node[JsonNodeString]]): Node[JsonNodeString] = {
     val value = children.map(x => printPair(wrapJsonString(x.data.name), x.data.value)).mkString(elementSeparator)
     Node(JsonNodeString(parent.data.name, wrapJsonObject(value)))
   }
 
-  private def getJsonNodeChildren(node: Node[JsonNode]): List[Node[JsonNode]] = {
+  implicit def aggregateJsonNodes(parent: Node[JsonNode], children: List[Node[JsonNode]]): Node[JsonNode] = Node(JsonNode("", List()))
+
+  implicit def getJsonNodeChildren(node: Node[JsonNode]): List[Node[JsonNode]] = {
     node.data.value match {
       case _: Seq[_] => List()
       case _: List[_] => List()
@@ -55,8 +33,29 @@ object JsonSerializer {
     }
   }
 
-  private def aggregateJsonNodes(parent: Node[JsonNode], children: List[Node[JsonNode]]): Node[JsonNode] =
-    Node(JsonNode("", List()))
+  def toJson(obj: Product): String = {
+    def toFlattenNodeString(x: FlattenNode[JsonNode], toString: Any => String): FlattenNode[JsonNodeString] =
+      FlattenNode(x.level, x.index, x.parentIndex, Node(JsonNodeString(x.node.data.name, toString(x.node.data.value))))
+
+    val jsonStrings = Tree(Node(JsonNode("", obj)))
+      .flat()
+      .nodes
+      .map(x => x.node.data.value match {
+        case _: Seq[_] => toFlattenNodeString(x, toJsonString)
+        case _: List[_] => toFlattenNodeString(x, toJsonString)
+        case _: Set[_] => toFlattenNodeString(x, toJsonString)
+        case _: Array[_] => toFlattenNodeString(x, toJsonString)
+        case _: Option[Nothing] => toFlattenNodeString(x, _ => wrapJsonObject(""))
+        case _: Product => toFlattenNodeString(x, _ => "product")
+        case _ => toFlattenNodeString(x, toJsonString)
+      })
+
+    FlattenTree(jsonStrings)
+      .build()
+      .root
+      .data
+      .value
+  }
 
   def printPair(key: String, value: String) = s"$key${keyValueSeparator}$value"
 

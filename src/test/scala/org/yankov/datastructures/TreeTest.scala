@@ -5,10 +5,10 @@ import org.scalatest.{Matchers, WordSpec}
 class TreeTest extends WordSpec with Matchers {
   case class StringNode(name: String, children: List[StringNode] = List())
 
-  private def getChildren(parent: Node[StringNode]): List[Node[StringNode]] =
+  implicit def getChildren(parent: Node[StringNode]): List[Node[StringNode]] =
     parent.data.children.map(y => Node(y))
 
-  private def aggregate(parent: Node[StringNode], children: List[Node[StringNode]]): Node[StringNode] =
+  implicit def aggregate(parent: Node[StringNode], children: List[Node[StringNode]]): Node[StringNode] =
     Node(StringNode(parent.data.name, children.map(y => y.data).sortWith((x, y) => x.name.compareTo(y.name) <= 0)))
 
   private def createStringNode(): StringNode = StringNode(
@@ -31,13 +31,7 @@ class TreeTest extends WordSpec with Matchers {
     )
   )
 
-  private def createTree(root: StringNode = createStringNode()): Tree[StringNode] = {
-    Tree(
-      Node(root),
-      getChildren,
-      aggregate
-    )
-  }
+  private def createTree(root: StringNode = createStringNode()): Tree[StringNode] = Tree(Node(root))
 
   private def createMergedTree1: Tree[StringNode] = {
     val root = StringNode(
@@ -138,10 +132,10 @@ class TreeTest extends WordSpec with Matchers {
 
   "merge should succeed in chain merges" in {
     val trees = List(
-      Tree(Node(StringNode("RC")), getChildren, aggregate),
-      Tree(Node(StringNode("A2C")), getChildren, aggregate),
-      Tree(Node(StringNode("B1C")), getChildren, aggregate),
-      Tree(Node(StringNode("C6C", List(StringNode("C6C0"), StringNode("C6C1"), StringNode("C6C2")))), getChildren, aggregate)
+      Tree(Node(StringNode("RC"))),
+      Tree(Node(StringNode("A2C"))),
+      Tree(Node(StringNode("B1C"))),
+      Tree(Node(StringNode("C6C", List(StringNode("C6C0"), StringNode("C6C1"), StringNode("C6C2")))))
     )
 
     val tree = createTree()
@@ -158,6 +152,6 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "merge should return same tree if parent is not found" in {
-    createTree().merge(x => x.name.equals("SOMETHING"), Tree(Node(StringNode("CHILD")), getChildren, aggregate)).root shouldBe createTree().root
+    createTree().merge(x => x.name.equals("SOMETHING"), Tree(Node(StringNode("CHILD")))).root shouldBe createTree().root
   }
 }

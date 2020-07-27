@@ -20,11 +20,10 @@ case class FlattenNode[T](level: Int, index: Int, parentIndex: Int, node: Node[T
   )
 }
 
-case class Tree[T](root: Node[T],
-                   getChildren: Node[T] => List[Node[T]],
-                   aggregate: (Node[T], List[Node[T]]) => Node[T]) {
+case class Tree[T](root: Node[T]) {
 
-  def flat(node: FlattenNode[T] = root.asFlatten(0, -1, -1)): FlattenTree[T] = {
+  def flat(node: FlattenNode[T] = root.asFlatten(0, -1, -1))
+          (implicit getChildren: Node[T] => List[Node[T]]): FlattenTree[T] = {
     @tailrec
     def iterate(node: FlattenNode[T],
                 index: Int,
@@ -41,14 +40,11 @@ case class Tree[T](root: Node[T],
       }
     }
 
-    FlattenTree(
-      iterate(node, node.index + 1, List(), List()),
-      getChildren,
-      aggregate
-    )
+    FlattenTree(iterate(node, node.index + 1, List(), List()))
   }
 
-  def printToString(printNode: Node[T] => String, indentation: String = ""): String = {
+  def printToString(printNode: Node[T] => String, indentation: String = "")
+                   (implicit getChildren: Node[T] => List[Node[T]]): String = {
     @tailrec
     def indent(level: Int, node: String, acc: String = ""): String = {
       if (level == 0) s"$acc$node"
@@ -58,12 +54,15 @@ case class Tree[T](root: Node[T],
     flat().nodes.map(x => s"${indent(x.level, printNode(x.node))}").mkString("\n")
   }
 
-  def find(matcher: Node[T] => Boolean): Option[Node[T]] = {
+  def find(matcher: Node[T] => Boolean)
+          (implicit getChildren: Node[T] => List[Node[T]]): Option[Node[T]] = {
     val result = flat().nodes.find(x => matcher(x.node))
     if (result.isDefined) Option(result.get.node) else Option.empty
   }
 
-  def merge(parentMatch: T => Boolean, that: Tree[T]): Tree[T] = {
+  def merge(parentMatch: T => Boolean, that: Tree[T])
+           (implicit getChildren: Node[T] => List[Node[T]],
+            aggregate: (Node[T], List[Node[T]]) => Node[T]): Tree[T] = {
     val thisFlatten = flat()
     val parent = thisFlatten.nodes.find(x => parentMatch(x.node.data))
     if (parent.isEmpty) this
@@ -72,15 +71,13 @@ case class Tree[T](root: Node[T],
       val thatRootIndex = thisFlatten.nodes.size
       val thatRootParentIndex = parent.get.index
       val thatFlatten = that.flat(that.root.asFlatten(thatRootLevel, thatRootIndex, thatRootParentIndex))
-      FlattenTree(thisFlatten.nodes.appendedAll(thatFlatten.nodes), getChildren, aggregate).build()
+      FlattenTree(thisFlatten.nodes.appendedAll(thatFlatten.nodes)).build()
     }
   }
 }
 
-case class FlattenTree[T](nodes: List[FlattenNode[T]],
-                          getChildren: Node[T] => List[Node[T]],
-                          aggregate: (Node[T], List[Node[T]]) => Node[T]) {
-  def build(): Tree[T] = {
+case class FlattenTree[T](nodes: List[FlattenNode[T]]) {
+  def build()(implicit aggregate: (Node[T], List[Node[T]]) => Node[T]): Tree[T] = {
     @tailrec
     def iterate(nodes: List[FlattenNode[T]], acc: List[FlattenNode[T]]): List[FlattenNode[T]] = {
       if (nodes.isEmpty) acc
@@ -110,6 +107,6 @@ case class FlattenTree[T](nodes: List[FlattenNode[T]],
     val depth = nodes.map(x => x.level).max
 
     val result = iterate(nodes.filter(x => x.level != depth), nodes.filter(x => x.level == depth))
-    Tree(result.head.node, getChildren, aggregate)
+    Tree(result.head.node)
   }
 }
