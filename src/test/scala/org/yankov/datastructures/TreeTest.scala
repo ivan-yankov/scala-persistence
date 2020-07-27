@@ -123,11 +123,11 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "flat subtree should succeed" in {
-    createTree().merge(x => x.name.equals("B0"), createTree()).flat().build().root shouldBe createMergedTree2.root
+    createTree().merge(x => x.name.equals("B0"), createTree()).flat().build() shouldBe createMergedTree2
   }
 
   "build should succeed" in {
-    createTree().flat().build().root shouldBe createTree().root
+    createTree().flat().build() shouldBe createTree()
   }
 
   "merge should succeed in chain merges" in {
@@ -144,14 +144,14 @@ class TreeTest extends WordSpec with Matchers {
       .merge(x => x.name.equals("B1"), trees(2))
       .merge(x => x.name.equals("C6"), trees(3))
 
-    tree.root shouldBe createMergedTree1.root
+    tree shouldBe createMergedTree1
   }
 
   "merge should succeed in merging subtree" in {
-    createTree().merge(x => x.name.equals("B0"), createTree()).root shouldBe createMergedTree2.root
+    createTree().merge(x => x.name.equals("B0"), createTree()) shouldBe createMergedTree2
   }
 
   "merge should return same tree if parent is not found" in {
-    createTree().merge(x => x.name.equals("SOMETHING"), Tree(Node(StringNode("CHILD")))).root shouldBe createTree().root
+    createTree().merge(x => x.name.equals("SOMETHING"), Tree(Node(StringNode("CHILD")))) shouldBe createTree()
   }
 }
