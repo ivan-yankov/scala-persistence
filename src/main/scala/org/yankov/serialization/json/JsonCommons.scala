@@ -1,6 +1,6 @@
 package org.yankov.serialization.json
 
-object JsonConstants {
+object JsonCommons {
   val elementSeparator: String = ","
   val keyValueSeparator: String = ":"
   val `null`: String = "null"

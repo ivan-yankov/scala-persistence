@@ -3,7 +3,7 @@ package org.yankov.serialization.json
 import java.util.Base64
 
 import org.yankov.datastructures.{FlattenNode, FlattenTree, Node, Tree}
-import org.yankov.serialization.json.JsonConstants._
+import org.yankov.serialization.json.JsonCommons._
 import org.yankov.serialization.json.JsonDataModel._
 
 object JsonSerializer {
@@ -90,10 +90,6 @@ object JsonSerializer {
     }
     wrapJsonArray(r)
   }
-
-//  private def mapToString(map: Map[_, _]): String = {
-//    map.toList
-//  }
 
   private def printDouble(d: Double): String = String.format(s"%.${numberOfDecimalPlaces}f", d)
 
