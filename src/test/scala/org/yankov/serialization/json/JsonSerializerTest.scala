@@ -35,7 +35,7 @@ class JsonSerializerTest extends WordSpec with Matchers {
                     option1: Option[String],
                     option2: Option[String],
                     child: Option[Entity],
-                    cannotSerialize: Map[Int, String])
+                    map: Map[Int, String])
 
   private def createEntity(numberOfChildren: Int): Entity = Entity(
     short = 1,
@@ -63,7 +63,7 @@ class JsonSerializerTest extends WordSpec with Matchers {
     option1 = Option("present"),
     option2 = Option.empty,
     child = if (numberOfChildren == 0) Option.empty else Option(createEntity(numberOfChildren - 1)),
-    cannotSerialize = Map(1 -> "1", 2 -> "2")
+    map = Map(1 -> "one", 2 -> "two", 3 -> "three")
   )
 
   "json serialization should succeed" in {

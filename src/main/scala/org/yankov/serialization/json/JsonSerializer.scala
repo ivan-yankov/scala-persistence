@@ -33,18 +33,15 @@ object JsonSerializer {
     }
   }
 
-  def toJson(obj: Product): String = {
+  def toJson(product: Product): String = {
     def toFlattenNodeString(x: FlattenNode[JsonNode], toString: Any => String): FlattenNode[JsonNodeString] =
       FlattenNode(x.level, x.index, x.parentIndex, Node(JsonNodeString(x.node.data.name, toString(x.node.data.value))))
 
-    val jsonStrings = Tree(Node(JsonNode("", obj)))
+    val jsonStrings = Tree(Node(JsonNode("", product)))
       .flat()
       .nodes
       .map(x => x.node.data.value match {
         case _: Seq[_] => toFlattenNodeString(x, toJsonString)
-        case _: List[_] => toFlattenNodeString(x, toJsonString)
-        case _: Set[_] => toFlattenNodeString(x, toJsonString)
-        case _: Array[_] => toFlattenNodeString(x, toJsonString)
         case _: Option[Nothing] => toFlattenNodeString(x, _ => wrapJsonObject(""))
         case _: Product => toFlattenNodeString(x, _ => "product")
         case _ => toFlattenNodeString(x, toJsonString)
@@ -75,6 +72,7 @@ object JsonSerializer {
     case value: Vector[_] => collectionToString(value)
     case value: Set[_] => collectionToString(value.toList)
     case value: Array[_] => collectionToString(value.toList)
+    case value: Map[_, _] => collectionToString(value.toList)
     case _ => `null`
   }
 
@@ -92,6 +90,10 @@ object JsonSerializer {
     }
     wrapJsonArray(r)
   }
+
+//  private def mapToString(map: Map[_, _]): String = {
+//    map.toList
+//  }
 
   private def printDouble(d: Double): String = String.format(s"%.${numberOfDecimalPlaces}f", d)
 
