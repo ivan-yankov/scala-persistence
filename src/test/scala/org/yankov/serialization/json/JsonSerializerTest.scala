@@ -82,4 +82,10 @@ class JsonSerializerTest extends WordSpec with Matchers {
     val entity = createEntity(1000)
     JsonSerializer.toJson(entity)
   }
+
+  "json serialization should produce formatted json" in {
+    val entity = createEntity(0)
+    val result = JsonSerializer.toJson(entity, format = true)
+    result shouldBe Source.fromResource("serialization-formatted-expected.json").getLines.toList.mkString("\n")
+  }
 }

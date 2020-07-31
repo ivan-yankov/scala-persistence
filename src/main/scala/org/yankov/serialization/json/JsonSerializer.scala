@@ -6,8 +6,11 @@ import org.yankov.datastructures.{FlattenNode, FlattenTree, Node, Tree}
 import org.yankov.serialization.json.JsonCommons._
 import org.yankov.serialization.json.JsonDataModel._
 
+import scala.annotation.tailrec
+
 object JsonSerializer {
   private val numberOfDecimalPlaces = 16
+  private val indentation = "  "
 
   implicit def getJsonNodeStringChildren(node: Node[JsonNodeString]): List[Node[JsonNodeString]] = List()
 
@@ -33,7 +36,7 @@ object JsonSerializer {
     }
   }
 
-  def toJson(product: Product): String = {
+  def toJson(product: Product, format: Boolean = false): String = {
     def toFlattenNodeString(x: FlattenNode[JsonNode], toString: Any => String): FlattenNode[JsonNodeString] =
       FlattenNode(x.level, x.index, x.parentIndex, Node(JsonNodeString(x.node.data.name, toString(x.node.data.value))))
 
@@ -47,11 +50,14 @@ object JsonSerializer {
         case _ => toFlattenNodeString(x, toJsonString)
       })
 
-    FlattenTree(jsonStrings)
+    val result = FlattenTree(jsonStrings)
       .build()
       .root
       .data
       .value
+
+    if (format) formatJsonString(result)
+    else result
   }
 
   def printPair(key: String, value: String) = s"$key${keyValueSeparator}$value"
@@ -89,6 +95,54 @@ object JsonSerializer {
       }
     }
     wrapJsonArray(r)
+  }
+
+  private def formatJsonString(json: String): String = {
+    val lines = json
+      .toList
+      .map(x => x.toString)
+      .map(x => x match {
+        case JsonCommons.openObject => x + "\n"
+        case JsonCommons.closeObject => "\n" + x
+        case JsonCommons.openArray => x + "\n"
+        case JsonCommons.closeArray => "\n" + x
+        case JsonCommons.elementSeparator => x + "\n"
+        case JsonCommons.keyValueSeparator => x + " "
+        case _ => x
+      })
+      .mkString("")
+      .split("\n")
+
+    def indentLevel(s: String): Int = {
+      val openBracesCount = s.count(x => x.toString.equals(openObject) || x.toString.equals(openArray))
+      val closeBracesCount = s.count(x => x.toString.equals(closeObject) || x.toString.equals(closeArray))
+      openBracesCount - closeBracesCount
+    }
+
+    def indent(index: Int, s: String): String = {
+      if (s.isEmpty) s
+      else {
+        val level = indentLevel(lines.take(index).mkString(""))
+        @tailrec
+        def iterate(level: Int, acc: String): String = {
+          if (level == 0) acc else iterate(level - 1, acc + indentation)
+        }
+        val lineIndentation = iterate(level, "")
+        if (s.contains(closeObject) || s.contains(closeArray)) {
+          lineIndentation.substring(0, lineIndentation.length - indentation.length) + s
+        }
+        else {
+          lineIndentation + s
+        }
+      }
+    }
+
+    Range(0, lines.length)
+      .toList
+      .zip(lines)
+      .map(x => (x._1, x._2))
+      .map(x => indent(x._1, x._2))
+      .mkString("\n")
   }
 
   private def printDouble(d: Double): String = String.format(s"%.${numberOfDecimalPlaces}f", d)
