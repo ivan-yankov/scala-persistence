@@ -5,11 +5,10 @@ import org.scalatest.{Matchers, WordSpec}
 class TreeTest extends WordSpec with Matchers {
   case class StringNode(name: String, children: List[StringNode] = List())
 
-  implicit def getChildren(parent: Node[StringNode]): List[Node[StringNode]] =
-    parent.data.children.map(y => Node(y))
+  implicit def getChildren(parent: StringNode): List[StringNode] = parent.children
 
-  implicit def aggregate(parent: Node[StringNode], children: List[Node[StringNode]]): Node[StringNode] =
-    Node(StringNode(parent.data.name, children.map(y => y.data).sortWith((x, y) => x.name.compareTo(y.name) <= 0)))
+  implicit def aggregate(parent: StringNode, children: List[StringNode]): StringNode =
+    StringNode(parent.name, children.sortWith((x, y) => x.name.compareTo(y.name) <= 0))
 
   private def createStringNode(): StringNode = StringNode(
     "ROOT",
@@ -31,7 +30,7 @@ class TreeTest extends WordSpec with Matchers {
     )
   )
 
-  private def createTree(root: StringNode = createStringNode()): Tree[StringNode] = Tree(Node(root))
+  private def createTree(root: StringNode = createStringNode()): Tree[StringNode] = Tree(root)
 
   private def createMergedTree1: Tree[StringNode] = {
     val root = StringNode(
@@ -83,22 +82,22 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "printToString should succeed" in {
-    createTree().printToString(x => x.data.name, "  ") shouldBe "ROOT\n  A0\n    B0\n      C0\n      C1\n      C2\n    B1\n      C3\n      C4\n      C5\n  A1\n    B2\n      C6\n      C7\n  A2"
+    createTree().printToString(x => x.name, "  ") shouldBe "ROOT\n  A0\n    B0\n      C0\n      C1\n      C2\n    B1\n      C3\n      C4\n      C5\n  A1\n    B2\n      C6\n      C7\n  A2"
   }
 
   "find should succeed for all nodes" in {
     val tree = createTree()
     List("ROOT", "A0", "A1", "A2", "B0", "B1", "B2", "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7")
-      .map(x => (x, tree.find(y => y.data.name.equals(x))))
-      .forall(z => z._2.isDefined && z._1.equals(z._2.get.data.name)) shouldBe true
+      .map(x => (x, tree.find(y => y.name.equals(x))))
+      .forall(z => z._2.isDefined && z._1.equals(z._2.get.name)) shouldBe true
   }
 
   "find should fail to find node, which does not exist" in {
-    createTree().find(x => x.data.name.equals("SOMETHING")).isEmpty shouldBe true
+    createTree().find(x => x.name.equals("SOMETHING")).isEmpty shouldBe true
   }
 
   "flat should succeed and return list of nodes with corresponding flatten key in the tree" in {
-    val result = createTree().flat().nodes.map(x => (List(x.level, x.index, x.parentIndex), x.node.data.name))
+    val result = createTree().flat().nodes.map(x => (List(x.level, x.index, x.parentIndex), x.data.name))
 
     result.size shouldBe 15
 
@@ -132,10 +131,10 @@ class TreeTest extends WordSpec with Matchers {
 
   "merge should succeed in chain merges" in {
     val trees = List(
-      Tree(Node(StringNode("RC"))),
-      Tree(Node(StringNode("A2C"))),
-      Tree(Node(StringNode("B1C"))),
-      Tree(Node(StringNode("C6C", List(StringNode("C6C0"), StringNode("C6C1"), StringNode("C6C2")))))
+      Tree(StringNode("RC")),
+      Tree(StringNode("A2C")),
+      Tree(StringNode("B1C")),
+      Tree(StringNode("C6C", List(StringNode("C6C0"), StringNode("C6C1"), StringNode("C6C2"))))
     )
 
     val tree = createTree()
@@ -152,6 +151,6 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "merge should return same tree if parent is not found" in {
-    createTree().merge(x => x.name.equals("SOMETHING"), Tree(Node(StringNode("CHILD")))) shouldBe createTree()
+    createTree().merge(x => x.name.equals("SOMETHING"), Tree(StringNode("CHILD"))) shouldBe createTree()
   }
 }
