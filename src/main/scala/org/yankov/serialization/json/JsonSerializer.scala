@@ -12,14 +12,7 @@ object JsonSerializer {
   private val numberOfDecimalPlaces = 16
   private val indentation = "  "
 
-  implicit def getJsonNodeStringChildren(node: JsonNodeString): List[JsonNodeString] = List()
-
-  implicit def aggregateJsonNodeStrings(parent: JsonNodeString, children: List[JsonNodeString]): JsonNodeString = {
-    val value = children.map(x => printPair(wrapJsonString(x.name), x.value)).mkString(elementSeparator)
-    JsonNodeString(parent.name, wrapJsonObject(value))
-  }
-
-  implicit def getJsonNodeChildren(node: JsonNode): List[JsonNode] = {
+  implicit def getChildren(node: JsonNode): List[JsonNode] = {
     node.value match {
       case _: Seq[_] => List()
       case _: List[_] => List()
@@ -34,7 +27,10 @@ object JsonSerializer {
     }
   }
 
-  implicit def aggregateJsonNodes(parent: JsonNode, children: List[JsonNode]): JsonNode = JsonNode("", List())
+  implicit def aggregate(parent: JsonNodeString, children: List[JsonNodeString]): JsonNodeString = {
+    val value = children.map(x => printPair(wrapJsonString(x.name), x.value)).mkString(elementSeparator)
+    JsonNodeString(parent.name, wrapJsonObject(value))
+  }
 
   def toJson(product: Product, format: Boolean = false): String = {
     val result = Tree(JsonNode("", product))
