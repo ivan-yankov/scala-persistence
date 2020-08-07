@@ -28,15 +28,15 @@ object JsonSerializer {
   }
 
   implicit def aggregate(parent: JsonNodeString, children: List[JsonNodeString]): JsonNodeString = {
-    val value = children.map(x => printPair(wrapJsonString(x.name), x.value)).mkString(elementSeparator)
-    JsonNodeString(parent.name, wrapJsonObject(value))
+    val value = children.map(x => printPair(x.name.wrapJsonString(), x.value)).mkString(elementSeparator)
+    JsonNodeString(parent.name, value.wrapJsonObject())
   }
 
   def toJson(product: Product, format: Boolean = false): String = {
     val result = Tree(JsonNode("", product))
       .map(x => x.value match {
         case value: Seq[_] => JsonNodeString(x.name, toJsonString(value))
-        case _: Option[Nothing] => JsonNodeString(x.name, wrapJsonObject(""))
+        case _: Option[Nothing] => JsonNodeString(x.name, "".wrapJsonObject())
         case _: Product => JsonNodeString(x.name, "product")
         case value => JsonNodeString(x.name, toJsonString(value))
       })
@@ -55,11 +55,11 @@ object JsonSerializer {
     case value: Long => value.toString
     case value: Float => printDouble(value)
     case value: Double => printDouble(value)
-    case value: Char => wrapJsonString(value.toString)
+    case value: Char => value.toString.wrapJsonString()
     case value: Boolean => if (value) "true" else "false"
-    case value: Byte => wrapJsonString(encodeBytes(Array(value)))
-    case value: Bytes => wrapJsonString(encodeBytes(value))
-    case value: String => wrapJsonString(value)
+    case value: Byte => encodeBytes(Array(value)).wrapJsonString()
+    case value: Bytes => encodeBytes(value).wrapJsonString()
+    case value: String => value.wrapJsonString()
     case value: Seq[_] => collectionToString(value)
     case value: List[_] => collectionToString(value)
     case value: Vector[_] => collectionToString(value)
@@ -81,7 +81,7 @@ object JsonSerializer {
           .mkString(elementSeparator)
       }
     }
-    wrapJsonArray(r)
+      r.wrapJsonArray()
   }
 
   private def formatJsonString(json: String): String = {
@@ -135,10 +135,4 @@ object JsonSerializer {
   private def printDouble(d: Double): String = String.format(s"%.${numberOfDecimalPlaces}f", d)
 
   private def encodeBytes(bytes: Bytes): String = Base64.getEncoder.withoutPadding.encodeToString(bytes)
-
-  private def wrapJsonString(s: String): String = s"$stringWrapper$s$stringWrapper"
-
-  private def wrapJsonArray(s: String) = s"$openArray$s$closeArray"
-
-  private def wrapJsonObject(s: String) = s"$openObject$s$closeObject"
 }
