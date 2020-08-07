@@ -1,20 +1,58 @@
 package org.yankov.datastructures
 
+import org.yankov.datastructures.TreeModel.Node
+
 import scala.annotation.tailrec
 
-case class Node[T](level: Int, index: Int, parentIndex: Int, data: T) {
-  def withIndex(newIndex: Int): Node[T] = Node(
-    level = level,
-    index = newIndex,
-    parentIndex = parentIndex,
-    data = data
-  )
+object TreeModel {
+  case class Node[T](level: Int, index: Int, parentIndex: Int, data: T) {
+    def withIndex(newIndex: Int): Node[T] = Node(
+      level = level,
+      index = newIndex,
+      parentIndex = parentIndex,
+      data = data
+    )
+  }
+
+  implicit class FlattenTree[T](nodes: List[Node[T]]) {
+    def build()(implicit aggregate: (T, List[T]) => T): Tree[T] = {
+      @tailrec
+      def iterate(nodes: List[Node[T]], acc: List[Node[T]]): List[Node[T]] = {
+        if (nodes.isEmpty) acc
+        else {
+          val depth = nodes.map(x => x.level).max
+          val parentIndexes = acc.map(x => x.parentIndex).distinct
+          val nodesAtDepth = nodes.filter(x => x.level == depth)
+          val parents = nodesAtDepth.filter(x => parentIndexes.contains(x.index))
+          val leaves = nodesAtDepth.filter(x => !parentIndexes.contains(x.index))
+          val newAcc = acc
+            .map(x => (parents.find(y => y.index == x.parentIndex).get, x))
+            .groupMap(x => x._1)(x => x._2)
+            .map(x => Node(
+              x._1.level,
+              x._1.index,
+              x._1.parentIndex,
+              aggregate(x._1.data, x._2.map(y => y.data))
+            ))
+            .toList
+            .appendedAll(leaves)
+            .sortWith((x, y) => x.index <= y.index)
+
+          iterate(nodes.filter(x => x.level != depth), newAcc)
+        }
+      }
+
+      val depth = nodes.map(x => x.level).max
+
+      val result = iterate(nodes.filter(x => x.level != depth), nodes.filter(x => x.level == depth))
+      Tree(result.head.data)
+    }
+  }
 }
 
 case class Tree[T](root: T) {
-
   def flat(node: Node[T] = Node(0, -1, -1, root))
-          (implicit getChildren: T => List[T]): FlattenTree[T] = {
+          (implicit getChildren: T => List[T]): List[Node[T]] = {
     @tailrec
     def iterate(node: Node[T],
                 index: Int,
@@ -31,7 +69,7 @@ case class Tree[T](root: T) {
       }
     }
 
-    FlattenTree(iterate(node, node.index + 1, List(), List()))
+    iterate(node, node.index + 1, List(), List())
   }
 
   def printToString(printNode: T => String, indentation: String = "")
@@ -42,12 +80,12 @@ case class Tree[T](root: T) {
       else indent(level - 1, node, s"$acc$indentation")
     }
 
-    flat().nodes.map(x => s"${indent(x.level, printNode(x.data))}").mkString("\n")
+    flat().map(x => s"${indent(x.level, printNode(x.data))}").mkString("\n")
   }
 
   def find(matcher: T => Boolean)
           (implicit getChildren: T => List[T]): Option[T] = {
-    val result = flat().nodes.find(x => matcher(x.data))
+    val result = flat().find(x => matcher(x.data))
     if (result.isDefined) Option(result.get.data) else Option.empty
   }
 
@@ -55,49 +93,18 @@ case class Tree[T](root: T) {
            (implicit getChildren: T => List[T],
             aggregate: (T, List[T]) => T): Tree[T] = {
     val thisFlatten = flat()
-    val parent = thisFlatten.nodes.find(x => parentMatch(x.data))
+    val parent = thisFlatten.find(x => parentMatch(x.data))
     if (parent.isEmpty) this
     else {
       val thatRootLevel = parent.get.level + 1
-      val thatRootIndex = thisFlatten.nodes.size
+      val thatRootIndex = thisFlatten.size
       val thatRootParentIndex = parent.get.index
       val thatFlatten = that.flat(Node(thatRootLevel, thatRootIndex, thatRootParentIndex, that.root))
-      FlattenTree(thisFlatten.nodes.appendedAll(thatFlatten.nodes)).build()
+      thisFlatten.appendedAll(thatFlatten).build()
     }
   }
-}
 
-case class FlattenTree[T](nodes: List[Node[T]]) {
-  def build()(implicit aggregate: (T, List[T]) => T): Tree[T] = {
-    @tailrec
-    def iterate(nodes: List[Node[T]], acc: List[Node[T]]): List[Node[T]] = {
-      if (nodes.isEmpty) acc
-      else {
-        val depth = nodes.map(x => x.level).max
-        val parentIndexes = acc.map(x => x.parentIndex).distinct
-        val nodesAtDepth = nodes.filter(x => x.level == depth)
-        val parents = nodesAtDepth.filter(x => parentIndexes.contains(x.index))
-        val leaves = nodesAtDepth.filter(x => !parentIndexes.contains(x.index))
-        val newAcc = acc
-          .map(x => (parents.find(y => y.index == x.parentIndex).get, x))
-          .groupMap(x => x._1)(x => x._2)
-          .map(x => Node(
-            x._1.level,
-            x._1.index,
-            x._1.parentIndex,
-            aggregate(x._1.data, x._2.map(y => y.data))
-          ))
-          .toList
-          .appendedAll(leaves)
-          .sortWith((x, y) => x.index <= y.index)
-
-        iterate(nodes.filter(x => x.level != depth), newAcc)
-      }
-    }
-
-    val depth = nodes.map(x => x.level).max
-
-    val result = iterate(nodes.filter(x => x.level != depth), nodes.filter(x => x.level == depth))
-    Tree(result.head.data)
+  def map[R](f: T => R)(implicit getChildren: T => List[T], aggregate: (R, List[R]) => R): Tree[R] = {
+    flat().map(x => Node(x.level, x.index, x.parentIndex, f(x.data))).build()
   }
 }

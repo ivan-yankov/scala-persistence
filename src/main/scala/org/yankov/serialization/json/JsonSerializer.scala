@@ -2,7 +2,7 @@ package org.yankov.serialization.json
 
 import java.util.Base64
 
-import org.yankov.datastructures.{FlattenTree, Node, Tree}
+import org.yankov.datastructures.Tree
 import org.yankov.serialization.json.JsonCommons._
 import org.yankov.serialization.json.JsonDataModel._
 
@@ -19,8 +19,6 @@ object JsonSerializer {
     JsonNodeString(parent.name, wrapJsonObject(value))
   }
 
-  implicit def aggregateJsonNodes(parent: JsonNode, children: List[JsonNode]): JsonNode = JsonNode("", List())
-
   implicit def getJsonNodeChildren(node: JsonNode): List[JsonNode] = {
     node.value match {
       case _: Seq[_] => List()
@@ -36,22 +34,16 @@ object JsonSerializer {
     }
   }
 
+  implicit def aggregateJsonNodes(parent: JsonNode, children: List[JsonNode]): JsonNode = JsonNode("", List())
+
   def toJson(product: Product, format: Boolean = false): String = {
-    def toJsonNodeString(x: Node[JsonNode], toString: Any => String): Node[JsonNodeString] =
-      Node(x.level, x.index, x.parentIndex, JsonNodeString(x.data.name, toString(x.data.value)))
-
-    val jsonStrings = Tree(JsonNode("", product))
-      .flat()
-      .nodes
-      .map(x => x.data.value match {
-        case _: Seq[_] => toJsonNodeString(x, toJsonString)
-        case _: Option[Nothing] => toJsonNodeString(x, _ => wrapJsonObject(""))
-        case _: Product => toJsonNodeString(x, _ => "product")
-        case _ => toJsonNodeString(x, toJsonString)
+    val result = Tree(JsonNode("", product))
+      .map(x => x.value match {
+        case value: Seq[_] => JsonNodeString(x.name, toJsonString(value))
+        case _: Option[Nothing] => JsonNodeString(x.name, wrapJsonObject(""))
+        case _: Product => JsonNodeString(x.name, "product")
+        case value => JsonNodeString(x.name, toJsonString(value))
       })
-
-    val result = FlattenTree(jsonStrings)
-      .build()
       .root
       .value
 
@@ -59,7 +51,7 @@ object JsonSerializer {
     else result
   }
 
-  def printPair(key: String, value: String) = s"$key${keyValueSeparator}$value"
+  private def printPair(key: String, value: String) = s"$key$keyValueSeparator$value"
 
   private def toJsonString(x: Any): String = x match {
     case value: Short => value.toString

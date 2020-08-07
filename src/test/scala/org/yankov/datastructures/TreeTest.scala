@@ -97,7 +97,7 @@ class TreeTest extends WordSpec with Matchers {
   }
 
   "flat should succeed and return list of nodes with corresponding flatten key in the tree" in {
-    val result = createTree().flat().nodes.map(x => (List(x.level, x.index, x.parentIndex), x.data.name))
+    val result = createTree().flat().map(x => (List(x.level, x.index, x.parentIndex), x.data.name))
 
     result.size shouldBe 15
 
