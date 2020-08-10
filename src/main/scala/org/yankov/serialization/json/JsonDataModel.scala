@@ -1,7 +1,7 @@
 package org.yankov.serialization.json
 
 object JsonDataModel {
-  type Bytes = Array[Byte]
+  case class Bytes(value: List[Byte])
 
   case class JsonNode(name: String, value: Any)
 

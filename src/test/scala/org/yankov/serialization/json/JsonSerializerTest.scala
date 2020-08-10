@@ -1,42 +1,12 @@
 package org.yankov.serialization.json
 
 import org.scalatest.{Matchers, WordSpec}
+import org.yankov.serialization.json.JsonDataModel.Bytes
+import org.yankov.serialization.json.Model._
 
 import scala.io.Source
 
 class JsonSerializerTest extends WordSpec with Matchers {
-
-  case class Dependency(id: String, description: String)
-
-  case class Pair(id: Int, dependency: Dependency)
-
-  case class Entity(short: Short,
-                    int: Int,
-                    long: Long,
-                    float: Float,
-                    double: Double,
-                    char: Char,
-                    boolean1: Boolean,
-                    boolean2: Boolean,
-                    byte: Byte,
-                    bytes: Array[Byte],
-                    string: String,
-                    emptySeq: Seq[Int],
-                    valuesSeq: Seq[Int],
-                    objectSeq: Seq[Dependency],
-                    arraySeq: Seq[Seq[Double]],
-                    valuesList: List[Int],
-                    objectList: List[Dependency],
-                    arrayList: List[List[Double]],
-                    valuesVector: Vector[Int],
-                    objectVector: Vector[Dependency],
-                    arrayVector: Vector[Vector[Double]],
-                    pair: Pair,
-                    option1: Option[String],
-                    option2: Option[String],
-                    child: Option[Entity],
-                    map: Map[Int, String])
-
   private def createEntity(numberOfChildren: Int): Entity = Entity(
     short = 1,
     int = 30000,
@@ -47,7 +17,7 @@ class JsonSerializerTest extends WordSpec with Matchers {
     boolean1 = true,
     boolean2 = false,
     byte = 34.toByte,
-    bytes = Array(1, 2, 3, 4, 5).map(x => x.toByte),
+    bytes = Bytes(List(1, 2, 3, 4, 5).map(x => x.toByte)),
     string = "serialization test",
     emptySeq = Seq(),
     valuesSeq = Seq.tabulate(5)(x => x + 1),

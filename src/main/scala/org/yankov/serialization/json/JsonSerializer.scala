@@ -14,10 +14,10 @@ object JsonSerializer {
 
   implicit def getChildren(node: JsonNode): List[JsonNode] = {
     node.value match {
+      case _: Bytes => List()
       case _: Seq[_] => List()
       case _: List[_] => List()
       case _: Set[_] => List()
-      case _: Array[_] => List()
       case product: Product =>
         Range(0, product.productIterator.size)
           .toList
@@ -35,6 +35,7 @@ object JsonSerializer {
   def toJson(product: Product, format: Boolean = false): String = {
     val result = Tree(JsonNode("", product))
       .map(x => x.value match {
+        case value: Bytes => JsonNodeString(x.name, toJsonString(value))
         case value: Seq[_] => JsonNodeString(x.name, toJsonString(value))
         case _: Option[Nothing] => JsonNodeString(x.name, "".wrapJsonObject())
         case _: Product => JsonNodeString(x.name, "product")
@@ -57,14 +58,13 @@ object JsonSerializer {
     case value: Double => printDouble(value)
     case value: Char => value.toString.wrapJsonString()
     case value: Boolean => if (value) "true" else "false"
-    case value: Byte => encodeBytes(Array(value)).wrapJsonString()
+    case value: Byte => encodeBytes(Bytes(List(value.toByte))).wrapJsonString()
     case value: Bytes => encodeBytes(value).wrapJsonString()
     case value: String => value.wrapJsonString()
     case value: Seq[_] => collectionToString(value)
     case value: List[_] => collectionToString(value)
     case value: Vector[_] => collectionToString(value)
     case value: Set[_] => collectionToString(value.toList)
-    case value: Array[_] => collectionToString(value.toList)
     case value: Map[_, _] => collectionToString(value.toList)
     case _ => `null`
   }
@@ -134,5 +134,5 @@ object JsonSerializer {
 
   private def printDouble(d: Double): String = String.format(s"%.${numberOfDecimalPlaces}f", d)
 
-  private def encodeBytes(bytes: Bytes): String = Base64.getEncoder.withoutPadding.encodeToString(bytes)
+  private def encodeBytes(bytes: Bytes): String = Base64.getEncoder.withoutPadding.encodeToString(bytes.value.toArray)
 }
