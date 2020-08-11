@@ -2,6 +2,7 @@ package org.yankov.serialization.json
 
 import org.yankov.datastructures.Tree
 import org.yankov.datastructures.TreeModel.Node
+import org.yankov.reflection.{ClassDescription, ReflectionUtils}
 import org.yankov.serialization.json.JsonCommons._
 import org.yankov.serialization.json.JsonDataModel.{JsonNode, JsonNodeString}
 
@@ -29,11 +30,7 @@ object JsonDeserializer {
 //  }
 
   def fromJson[T: ClassTag](json: String): List[Node[JsonNodeString]] = {
-//    val t = typeTag[T]
-//    val m = runtimeMirror(getClass.getClassLoader)
-//    val c = typeOf[T].typeSymbol.asClass
-//    val rc = m.reflectClass(c)
-
     Tree(JsonNodeString("", json)).flat()
+//    Tree(ReflectionUtils.describe[T]()).flat()
   }
 }

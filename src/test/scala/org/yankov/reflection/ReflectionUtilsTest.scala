@@ -22,9 +22,7 @@ case class Complex(short: Short,
 
 class ReflectionUtilsTest extends WordSpec with Matchers {
   "create default instance should succeed" in {
-    val result = ReflectionUtils.describe[Complex](List(("Simple", Simple(0, ""))))
-
-    result.defaultInstance shouldBe Complex(
+      ReflectionUtils.createDefaultInstance[Complex](List(("Simple", Simple(0, "")))) shouldBe Complex(
       short = 0,
       int = 0,
       long = 0,
@@ -41,29 +39,34 @@ class ReflectionUtilsTest extends WordSpec with Matchers {
       map = Map(),
       Simple(0, "")
     )
+  }
 
-    result.fieldDescriptions shouldBe List(
-      FieldDescription("short", "Short"),
-      FieldDescription("int", "Int"),
-      FieldDescription("long", "Long"),
-      FieldDescription("float", "Float"),
-      FieldDescription("double", "Double"),
-      FieldDescription("char", "Char"),
-      FieldDescription("boolean", "Boolean"),
-      FieldDescription("byte", "Byte"),
-      FieldDescription("string", "String"),
-      FieldDescription("seq", "Seq"),
-      FieldDescription("list", "List"),
-      FieldDescription("vector", "Vector"),
-      FieldDescription("option", "Option"),
-      FieldDescription("map", "Map"),
-      FieldDescription("simple", "Simple")
+  "describe should succeed" in {
+    ReflectionUtils.describe[Complex] shouldBe ClassDescription(
+      typeName = "Complex",
+      fieldDescriptions = List(
+        FieldDescription("short", "Short"),
+        FieldDescription("int", "Int"),
+        FieldDescription("long", "Long"),
+        FieldDescription("float", "Float"),
+        FieldDescription("double", "Double"),
+        FieldDescription("char", "Char"),
+        FieldDescription("boolean", "Boolean"),
+        FieldDescription("byte", "Byte"),
+        FieldDescription("string", "String"),
+        FieldDescription("seq", "Seq"),
+        FieldDescription("list", "List"),
+        FieldDescription("vector", "Vector"),
+        FieldDescription("option", "Option"),
+        FieldDescription("map", "Map"),
+        FieldDescription("simple", "Simple")
+      )
     )
   }
 
   "set field should succeed" in {
-    val description = ReflectionUtils.describe[Simple]()
-    ReflectionUtils.setField(description.defaultInstance, "id", 1) shouldBe Simple(1, "")
-    ReflectionUtils.setField(description.defaultInstance, "name", "updated") shouldBe Simple(1, "updated")
+    val instance = ReflectionUtils.createDefaultInstance[Simple]()
+    ReflectionUtils.setField(instance, "id", 1) shouldBe Simple(1, "")
+    ReflectionUtils.setField(instance, "name", "updated") shouldBe Simple(1, "updated")
   }
 }

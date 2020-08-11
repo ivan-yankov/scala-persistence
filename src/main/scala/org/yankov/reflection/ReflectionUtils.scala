@@ -7,12 +7,13 @@ import scala.reflect.runtime.universe._
 
 case class FieldDescription(name: String, typeName: String)
 
-case class ClassDescription[T](defaultInstance: T, fieldDescriptions: List[FieldDescription])
+case class ClassDescription(typeName: String, fieldDescriptions: List[FieldDescription])
 
 object ReflectionUtils {
   private val log = LoggerFactory.getLogger(ReflectionUtils.getClass)
+  private val runtimeUniverse = scala.reflect.runtime.universe
 
-  private def defaultValue(className: String, defaultInstances: List[(String, Any)]): Any = className match {
+  private def defaultValue(className: String, dependencies: List[(String, Any)]): Any = className match {
     case "Short" => 0.toShort
     case "Int" => 0.toInt
     case "Long" => 0.toLong
@@ -29,32 +30,47 @@ object ReflectionUtils {
     case "Map" => Map()
     case "Option" => Option.empty
     case _ =>
-      val found = defaultInstances.find(x => x._1.equals(className))
+      val found = dependencies.find(x => x._1.equals(className))
       if (found.isDefined) found.get._2
       else log.error(s"Undefined default value for type [$className]")
   }
 
-  def describe[T: ClassTag](defaultInstances: List[(String, Any)] = List())(implicit t: TypeTag[T]): ClassDescription[T] = {
-    val runtimeUniverse = scala.reflect.runtime.universe
+  private def getClassReflection[T](implicit t: TypeTag[T]): runtimeUniverse.ClassMirror = {
     val mirror = runtimeUniverse.runtimeMirror(getClass.getClassLoader)
     val classT = runtimeUniverse.typeOf[T].typeSymbol.asClass
-    val classReflection = mirror.reflectClass(classT)
+    mirror.reflectClass(classT)
+  }
+
+  private def getConstructorMirror[T](implicit t: TypeTag[T]): runtimeUniverse.MethodMirror = {
     val constructor = runtimeUniverse.typeOf[T].decl(runtimeUniverse.termNames.CONSTRUCTOR).asMethod
-    val constructorMirror = classReflection.reflectConstructor(constructor)
-    val fields = constructorMirror
+    getClassReflection[T].reflectConstructor(constructor)
+  }
+
+  private def getFields[T](implicit t: TypeTag[T]): List[FieldDescription] = {
+    getConstructorMirror[T]
       .symbol
       .typeSignature
       .paramLists
       .sortWith((x, y) => x.size <= y.size)
       .head
       .map(x => FieldDescription(x.name.toString, x.typeSignature.typeSymbol.name.toString))
-    val defaultValues = fields.map(x => defaultValue(x.typeName, defaultInstances))
-    val defaultInstance = constructorMirror(defaultValues: _*).asInstanceOf[T]
-    ClassDescription(defaultInstance, fields)
+  }
+
+  def createDefaultInstance[T](dependencies: List[(String, Any)] = List())(implicit t: TypeTag[T]): T = {
+    val defaultValues = getFields[T].map(x => defaultValue(x.typeName, dependencies))
+    val constructorMirror = getConstructorMirror[T]
+    constructorMirror(defaultValues: _*).asInstanceOf[T]
+  }
+
+  def describe[T](implicit t: TypeTag[T]): ClassDescription = {
+    val classReflection = getClassReflection[T]
+    ClassDescription(
+      classReflection.symbol.typeSignature.typeSymbol.name.toString,
+      getFields[T]
+    )
   }
 
   def setField[T: ClassTag, V](instance: T, name: String, value: V)(implicit t: TypeTag[T]): T = {
-    val runtimeUniverse = scala.reflect.runtime.universe
     val runtimeMirror = runtimeUniverse.runtimeMirror(instance.getClass.getClassLoader)
     val instanceMirror = runtimeMirror.reflect(instance)
     val fieldTerm = runtimeUniverse.TermName(name)
