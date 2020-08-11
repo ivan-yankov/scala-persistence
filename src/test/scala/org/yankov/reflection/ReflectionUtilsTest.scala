@@ -1,4 +1,4 @@
-package org.yankov.serialization.json
+package org.yankov.reflection
 
 import org.scalatest.{Matchers, WordSpec}
 
@@ -17,11 +17,12 @@ case class Complex(short: Short,
                    list: List[Byte],
                    vector: Vector[Int],
                    option: Option[String],
-                   map: Map[Int, String])
+                   map: Map[Int, String],
+                   simple: Simple)
 
 class ReflectionUtilsTest extends WordSpec with Matchers {
   "create default instance should succeed" in {
-    val result = ReflectionUtils.describe[Complex]
+    val result = ReflectionUtils.describe[Complex](List(("Simple", Simple(0, ""))))
 
     result.defaultInstance shouldBe Complex(
       short = 0,
@@ -37,29 +38,31 @@ class ReflectionUtilsTest extends WordSpec with Matchers {
       list = List(),
       vector = Vector(),
       option = Option.empty,
-      map = Map()
+      map = Map(),
+      Simple(0, "")
     )
 
     result.fieldDescriptions shouldBe List(
-      FieldDescription("short", "short"),
-      FieldDescription("int", "int"),
-      FieldDescription("long", "long"),
-      FieldDescription("float", "float"),
-      FieldDescription("double", "double"),
-      FieldDescription("char", "char"),
-      FieldDescription("boolean", "boolean"),
-      FieldDescription("byte", "byte"),
-      FieldDescription("string", "string"),
-      FieldDescription("seq", "seq"),
-      FieldDescription("list", "list"),
-      FieldDescription("vector", "vector"),
-      FieldDescription("option", "option"),
-      FieldDescription("map", "map"),
+      FieldDescription("short", "Short"),
+      FieldDescription("int", "Int"),
+      FieldDescription("long", "Long"),
+      FieldDescription("float", "Float"),
+      FieldDescription("double", "Double"),
+      FieldDescription("char", "Char"),
+      FieldDescription("boolean", "Boolean"),
+      FieldDescription("byte", "Byte"),
+      FieldDescription("string", "String"),
+      FieldDescription("seq", "Seq"),
+      FieldDescription("list", "List"),
+      FieldDescription("vector", "Vector"),
+      FieldDescription("option", "Option"),
+      FieldDescription("map", "Map"),
+      FieldDescription("simple", "Simple")
     )
   }
 
   "set field should succeed" in {
-    val description = ReflectionUtils.describe[Simple]
+    val description = ReflectionUtils.describe[Simple]()
     ReflectionUtils.setField(description.defaultInstance, "id", 1) shouldBe Simple(1, "")
     ReflectionUtils.setField(description.defaultInstance, "name", "updated") shouldBe Simple(1, "updated")
   }
