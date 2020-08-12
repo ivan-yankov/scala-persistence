@@ -5,6 +5,8 @@ import org.yankov.reflection.{Field, ReflectionUtils}
 import org.yankov.serialization.json.JsonCommons._
 import org.yankov.serialization.json.JsonDataModel.JsonNodeString
 
+import scala.reflect.ClassTag
+
 object JsonDeserializer {
   implicit def getChildren(node: JsonNodeString): List[JsonNodeString] = {
     if (node.value.startsWith(openObject) && node.value.endsWith(closeObject)) {
@@ -21,13 +23,14 @@ object JsonDeserializer {
     else List()
   }
 
-//  implicit def getChildren[_](parent: Field[_]): List[Field[_]] = {
-//    if (ReflectionUtils.Types.asList.contains(parent.cls)) List()
-//    else ReflectionUtils.getFields(parent.cls)
-//  }
+  implicit def getChildren(parent: Field): List[Field] = {
+    if (ReflectionUtils.Classes.asList.contains(parent.cls)) List()
+    else ReflectionUtils.getFields(parent.cls)
+  }
 
-  def fromJson[T](json: String): Unit = {
+  def fromJson[T: ClassTag](json: String)(implicit m: Manifest[T]): Unit = {
     val jsonFlatten = Tree(JsonNodeString("", json)).flat()
-//    val classFlatten = Tree(Field("", classOf[T])).flat()
+    val classFlatten = Tree(Field("", m.runtimeClass)).flat()
+    classFlatten
   }
 }

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
-case class Field[T](name: String, cls: Class[T])
+case class Field(name: String, cls: Class[_])
 
 object ReflectionUtils {
   private val log = LoggerFactory.getLogger(ReflectionUtils.getClass)
@@ -18,62 +18,63 @@ object ReflectionUtils {
     }
   }
 
-  object Types {
-    val short: String = "scala.Short"
-    val int: String = "scala.Int"
-    val long: String = "scala.Long"
-    val float: String = "scala.Float"
-    val double: String = "scala.Double"
-    val char: String = "scala.Char"
-    val boolean: String = "scala.Boolean"
-    val byte: String = "scala.Byte"
-    val string: String = "java.lang.String"
-    val seq: String = "scala.collection.immutable.Seq"
-    val list: String = "scala.collection.immutable.List"
-    val vector: String = "scala.collection.immutable.Vector"
-    val set: String = "scala.collection.immutable.Set"
-    val map: String = "scala.collection.immutable.Map"
-    val option: String = "scala.Option"
+  object Classes {
+    val short: Class[Short] = classOf[Short]
+    val int: Class[Int] = classOf[Int]
+    val long: Class[Long] = classOf[Long]
+    val float: Class[Float] = classOf[Float]
+    val double: Class[Double] = classOf[Double]
+    val char: Class[Char] = classOf[Char]
+    val boolean: Class[Boolean] = classOf[Boolean]
+    val byte: Class[Byte] = classOf[Byte]
+    val string: Class[String] = classOf[String]
+    val seq: Class[Seq[_]] = classOf[Seq[_]]
+    val list: Class[List[_]] = classOf[List[_]]
+    val vector: Class[Vector[_]] = classOf[Vector[_]]
+    val set: Class[Set[_]] = classOf[Set[_]]
+    val map: Class[Map[_, _]] = classOf[Map[_, _]]
+    val option: Class[Option[_]] = classOf[Option[_]]
 
-    val asList: List[String] = List(
+    val asList: List[Class[_]] = List(
       short, int, long, float, double, char, boolean, byte, string, seq, list, vector, set, map, option
     )
   }
 
-  private def defaultValue[T](cls: Class[T]): Any = {
-    val className = cls.getName.unifyTypeName
-    className match {
-      case Types.short => 0.toShort
-      case Types.int => 0.toInt
-      case Types.long => 0.toLong
-      case Types.float => 0.0.toFloat
-      case Types.double => 0.0.toDouble
-      case Types.char => ' '
-      case Types.boolean => false
-      case Types.byte => 0.toByte
-      case Types.string => ""
-      case Types.seq => Seq()
-      case Types.list => List()
-      case Types.vector => Vector()
-      case Types.set => Set()
-      case Types.map => Map()
-      case Types.option => Option.empty
-      case _ => log.error(s"Undefined default value for type [$className]")
+  private def defaultValue[T](cls: Class[T]): T = {
+    val value = cls match {
+      case Classes.short => 0.toShort
+      case Classes.int => 0.toInt
+      case Classes.long => 0.toLong
+      case Classes.float => 0.0.toFloat
+      case Classes.double => 0.0.toDouble
+      case Classes.char => ' '
+      case Classes.boolean => false
+      case Classes.byte => 0.toByte
+      case Classes.string => ""
+      case Classes.seq => Seq()
+      case Classes.list => List()
+      case Classes.vector => Vector()
+      case Classes.set => Set()
+      case Classes.map => Map()
+      case Classes.option => Option.empty
+      case _ => log.error(s"Undefined default value for type [${cls.getName}]")
     }
+    value.asInstanceOf[T]
   }
 
-  def getFields[T](implicit m: Manifest[T]): List[Field[_]] = {
-    m.runtimeClass
+  def getFields(cls: Class[_]): List[Field] = {
+    cls
       .getDeclaredFields
       .map(x => Field(x.getName, x.getType))
       .toList
   }
 
   def createDefaultInstance[T](implicit m: Manifest[T]): T = {
-    m.runtimeClass
+    val cls = m.runtimeClass
+    cls
       .getConstructors
       .head
-      .newInstance(getFields[T].map(x => defaultValue(x.cls)): _*)
+      .newInstance(getFields(cls).map(x => defaultValue(x.cls)): _*)
       .asInstanceOf[T]
   }
 

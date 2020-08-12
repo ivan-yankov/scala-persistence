@@ -56,7 +56,7 @@ class ReflectionUtilsTest extends WordSpec with Matchers {
   }
 
   "get fields for class name should succeed" in {
-    ReflectionUtils.getFields[Complex] shouldBe List(
+    ReflectionUtils.getFields(classOf[Complex]) shouldBe List(
       Field("short", classOf[Short]),
       Field("int", classOf[Int]),
       Field("long", classOf[Long]),
