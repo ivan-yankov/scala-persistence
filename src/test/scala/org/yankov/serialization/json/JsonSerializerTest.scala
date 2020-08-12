@@ -2,7 +2,6 @@ package org.yankov.serialization.json
 
 import org.scalatest.{Matchers, WordSpec}
 import org.yankov.serialization.json.JsonDataModel.Bytes
-import org.yankov.serialization.json.Model._
 
 import scala.io.Source
 

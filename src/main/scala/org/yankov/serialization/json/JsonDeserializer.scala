@@ -1,13 +1,9 @@
 package org.yankov.serialization.json
 
 import org.yankov.datastructures.Tree
-import org.yankov.datastructures.TreeModel.Node
 import org.yankov.reflection.{ClassDescription, ReflectionUtils}
 import org.yankov.serialization.json.JsonCommons._
-import org.yankov.serialization.json.JsonDataModel.{JsonNode, JsonNodeString}
-
-import scala.reflect.{ClassTag, classTag}
-import scala.reflect.runtime.universe._
+import org.yankov.serialization.json.JsonDataModel.JsonNodeString
 
 object JsonDeserializer {
   implicit def getChildren(node: JsonNodeString): List[JsonNodeString] = {
@@ -25,12 +21,13 @@ object JsonDeserializer {
     else List()
   }
 
-//  implicit def aggregate(parent: JsonNode, children: List[JsonNode]): JsonNode = {
-//    JsonNode(parent.name)
-//  }
+  implicit def getChildren(parent: ClassDescription): List[ClassDescription] = {
+    if (ReflectionUtils.Types.asList.contains(parent.className)) List()
+    else ReflectionUtils.getFields(parent.className)
+  }
 
-  def fromJson[T: ClassTag](json: String): List[Node[JsonNodeString]] = {
-    Tree(JsonNodeString("", json)).flat()
-//    Tree(ReflectionUtils.describe[T]()).flat()
+  def fromJson(className: String, json: String): Unit = {
+    val jsonFlatten = Tree(JsonNodeString("", json)).flat()
+    val classFlatten = Tree(ClassDescription("", className)).flat()
   }
 }

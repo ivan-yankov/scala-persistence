@@ -5,69 +5,77 @@ import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
-case class FieldDescription(name: String, typeName: String)
-
-case class ClassDescription(typeName: String, fieldDescriptions: List[FieldDescription])
+case class ClassDescription(name: String, className: String)
 
 object ReflectionUtils {
   private val log = LoggerFactory.getLogger(ReflectionUtils.getClass)
   private val runtimeUniverse = scala.reflect.runtime.universe
 
+  object Types {
+    val short: String = "scala.Short"
+    val int: String = "scala.Int"
+    val long: String = "scala.Long"
+    val float: String = "scala.Float"
+    val double: String = "scala.Double"
+    val char: String = "scala.Char"
+    val boolean: String = "scala.Boolean"
+    val byte: String = "scala.Byte"
+    val string: String = "java.lang.String"
+    val seq: String = "scala.collection.immutable.Seq"
+    val list: String = "scala.collection.immutable.List"
+    val vector: String = "scala.collection.immutable.Vector"
+    val set: String = "scala.collection.immutable.Set"
+    val map: String = "scala.collection.immutable.Map"
+    val option: String = "scala.Option"
+
+    val asList: List[String] = List(
+      short, int, long, float, double, char, boolean, byte, string, seq, list, vector, set, map, option
+    )
+  }
+
   private def defaultValue(className: String, dependencies: List[(String, Any)]): Any = className match {
-    case "Short" => 0.toShort
-    case "Int" => 0.toInt
-    case "Long" => 0.toLong
-    case "Float" => 0.0.toFloat
-    case "Double" => 0.0.toDouble
-    case "Char" => ' '
-    case "Boolean" => false
-    case "Byte" => 0.toByte
-    case "String" => ""
-    case "Seq" => Seq()
-    case "List" => List()
-    case "Vector" => Vector()
-    case "Set" => Set()
-    case "Map" => Map()
-    case "Option" => Option.empty
+    case Types.short => 0.toShort
+    case Types.int => 0.toInt
+    case Types.long => 0.toLong
+    case Types.float => 0.0.toFloat
+    case Types.double => 0.0.toDouble
+    case Types.char => ' '
+    case Types.boolean => false
+    case Types.byte => 0.toByte
+    case Types.string => ""
+    case Types.seq => Seq()
+    case Types.list => List()
+    case Types.vector => Vector()
+    case Types.set => Set()
+    case Types.map => Map()
+    case Types.option => Option.empty
     case _ =>
       val found = dependencies.find(x => x._1.equals(className))
       if (found.isDefined) found.get._2
       else log.error(s"Undefined default value for type [$className]")
   }
 
-  private def getClassReflection[T](implicit t: TypeTag[T]): runtimeUniverse.ClassMirror = {
-    val mirror = runtimeUniverse.runtimeMirror(getClass.getClassLoader)
-    val classT = runtimeUniverse.typeOf[T].typeSymbol.asClass
-    mirror.reflectClass(classT)
+  def getFields(className: String): List[ClassDescription] = {
+    implicit class StringExtensions(s: String) {
+      def unifyTypeName: String = {
+        if (!s.contains(".")) "scala." + s.substring(0, 1).toUpperCase() + s.substring(1, s.length)
+        else s
+      }
+    }
+
+    Class
+      .forName(className)
+      .getDeclaredFields
+      .map(x => ClassDescription(x.getName, x.getType.getName.unifyTypeName))
+      .toList
   }
 
-  private def getConstructorMirror[T](implicit t: TypeTag[T]): runtimeUniverse.MethodMirror = {
-    val constructor = runtimeUniverse.typeOf[T].decl(runtimeUniverse.termNames.CONSTRUCTOR).asMethod
-    getClassReflection[T].reflectConstructor(constructor)
-  }
-
-  private def getFields[T](implicit t: TypeTag[T]): List[FieldDescription] = {
-    getConstructorMirror[T]
-      .symbol
-      .typeSignature
-      .paramLists
-      .sortWith((x, y) => x.size <= y.size)
+  def createDefaultInstance(className: String, dependencies: List[(String, Any)] = List()): Any = {
+    Class
+      .forName(className)
+      .getConstructors
       .head
-      .map(x => FieldDescription(x.name.toString, x.typeSignature.typeSymbol.name.toString))
-  }
-
-  def createDefaultInstance[T](dependencies: List[(String, Any)] = List())(implicit t: TypeTag[T]): T = {
-    val defaultValues = getFields[T].map(x => defaultValue(x.typeName, dependencies))
-    val constructorMirror = getConstructorMirror[T]
-    constructorMirror(defaultValues: _*).asInstanceOf[T]
-  }
-
-  def describe[T](implicit t: TypeTag[T]): ClassDescription = {
-    val classReflection = getClassReflection[T]
-    ClassDescription(
-      classReflection.symbol.typeSignature.typeSymbol.name.toString,
-      getFields[T]
-    )
+      .newInstance(getFields(className).map(x => defaultValue(x.className, dependencies)): _*)
   }
 
   def setField[T: ClassTag, V](instance: T, name: String, value: V)(implicit t: TypeTag[T]): T = {

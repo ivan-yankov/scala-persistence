@@ -22,7 +22,7 @@ case class Complex(short: Short,
 
 class ReflectionUtilsTest extends WordSpec with Matchers {
   "create default instance should succeed" in {
-      ReflectionUtils.createDefaultInstance[Complex](List(("Simple", Simple(0, "")))) shouldBe Complex(
+    ReflectionUtils.createDefaultInstance("org.yankov.reflection.Complex", List(("org.yankov.reflection.Simple", Simple(0, "")))) shouldBe Complex(
       short = 0,
       int = 0,
       long = 0,
@@ -41,31 +41,28 @@ class ReflectionUtilsTest extends WordSpec with Matchers {
     )
   }
 
-  "describe should succeed" in {
-    ReflectionUtils.describe[Complex] shouldBe ClassDescription(
-      typeName = "Complex",
-      fieldDescriptions = List(
-        FieldDescription("short", "Short"),
-        FieldDescription("int", "Int"),
-        FieldDescription("long", "Long"),
-        FieldDescription("float", "Float"),
-        FieldDescription("double", "Double"),
-        FieldDescription("char", "Char"),
-        FieldDescription("boolean", "Boolean"),
-        FieldDescription("byte", "Byte"),
-        FieldDescription("string", "String"),
-        FieldDescription("seq", "Seq"),
-        FieldDescription("list", "List"),
-        FieldDescription("vector", "Vector"),
-        FieldDescription("option", "Option"),
-        FieldDescription("map", "Map"),
-        FieldDescription("simple", "Simple")
-      )
+  "get fields for class name should succeed" in {
+    ReflectionUtils.getFields("org.yankov.reflection.Complex") shouldBe List(
+      ClassDescription("short", "scala.Short"),
+      ClassDescription("int", "scala.Int"),
+      ClassDescription("long", "scala.Long"),
+      ClassDescription("float", "scala.Float"),
+      ClassDescription("double", "scala.Double"),
+      ClassDescription("char", "scala.Char"),
+      ClassDescription("boolean", "scala.Boolean"),
+      ClassDescription("byte", "scala.Byte"),
+      ClassDescription("string", "java.lang.String"),
+      ClassDescription("seq", "scala.collection.immutable.Seq"),
+      ClassDescription("list", "scala.collection.immutable.List"),
+      ClassDescription("vector", "scala.collection.immutable.Vector"),
+      ClassDescription("option", "scala.Option"),
+      ClassDescription("map", "scala.collection.immutable.Map"),
+      ClassDescription("simple", "org.yankov.reflection.Simple")
     )
   }
 
   "set field should succeed" in {
-    val instance = ReflectionUtils.createDefaultInstance[Simple]()
+    val instance = ReflectionUtils.createDefaultInstance("org.yankov.reflection.Simple").asInstanceOf[Simple]
     ReflectionUtils.setField(instance, "id", 1) shouldBe Simple(1, "")
     ReflectionUtils.setField(instance, "name", "updated") shouldBe Simple(1, "updated")
   }
