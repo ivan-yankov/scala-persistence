@@ -4,6 +4,21 @@ import org.scalatest.{Matchers, WordSpec}
 
 case class Simple(id: Int, name: String)
 
+case class Base(short: Short,
+                   int: Int,
+                   long: Long,
+                   float: Float,
+                   double: Double,
+                   char: Char,
+                   boolean: Boolean,
+                   byte: Byte,
+                   string: String,
+                   seq: Seq[Int],
+                   list: List[Byte],
+                   vector: Vector[Int],
+                   option: Option[String],
+                   map: Map[Int, String])
+
 case class Complex(short: Short,
                    int: Int,
                    long: Long,
@@ -22,7 +37,7 @@ case class Complex(short: Short,
 
 class ReflectionUtilsTest extends WordSpec with Matchers {
   "create default instance should succeed" in {
-    ReflectionUtils.createDefaultInstance("org.yankov.reflection.Complex", List(("org.yankov.reflection.Simple", Simple(0, "")))) shouldBe Complex(
+    ReflectionUtils.createDefaultInstance("org.yankov.reflection.Base") shouldBe Base(
       short = 0,
       int = 0,
       long = 0,
@@ -36,8 +51,7 @@ class ReflectionUtilsTest extends WordSpec with Matchers {
       list = List(),
       vector = Vector(),
       option = Option.empty,
-      map = Map(),
-      Simple(0, "")
+      map = Map()
     )
   }
 

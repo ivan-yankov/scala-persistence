@@ -33,7 +33,7 @@ object ReflectionUtils {
     )
   }
 
-  private def defaultValue(className: String, dependencies: List[(String, Any)]): Any = className match {
+  private def defaultValue(className: String): Any = className match {
     case Types.short => 0.toShort
     case Types.int => 0.toInt
     case Types.long => 0.toLong
@@ -49,10 +49,7 @@ object ReflectionUtils {
     case Types.set => Set()
     case Types.map => Map()
     case Types.option => Option.empty
-    case _ =>
-      val found = dependencies.find(x => x._1.equals(className))
-      if (found.isDefined) found.get._2
-      else log.error(s"Undefined default value for type [$className]")
+    case _ => log.error(s"Undefined default value for type [$className]")
   }
 
   def getFields(className: String): List[ClassDescription] = {
@@ -70,12 +67,12 @@ object ReflectionUtils {
       .toList
   }
 
-  def createDefaultInstance(className: String, dependencies: List[(String, Any)] = List()): Any = {
+  def createDefaultInstance(className: String): Any = {
     Class
       .forName(className)
       .getConstructors
       .head
-      .newInstance(getFields(className).map(x => defaultValue(x.className, dependencies)): _*)
+      .newInstance(getFields(className).map(x => defaultValue(x.className)): _*)
   }
 
   def setField[T: ClassTag, V](instance: T, name: String, value: V)(implicit t: TypeTag[T]): T = {
