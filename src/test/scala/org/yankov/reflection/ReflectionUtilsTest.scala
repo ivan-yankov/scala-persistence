@@ -37,7 +37,7 @@ case class Complex(short: Short,
 
 class ReflectionUtilsTest extends WordSpec with Matchers {
   "create default instance should succeed" in {
-    ReflectionUtils.createDefaultInstance("org.yankov.reflection.Base") shouldBe Base(
+    ReflectionUtils.createDefaultInstance[Base] shouldBe Base(
       short = 0,
       int = 0,
       long = 0,
@@ -56,27 +56,27 @@ class ReflectionUtilsTest extends WordSpec with Matchers {
   }
 
   "get fields for class name should succeed" in {
-    ReflectionUtils.getFields("org.yankov.reflection.Complex") shouldBe List(
-      ClassDescription("short", "scala.Short"),
-      ClassDescription("int", "scala.Int"),
-      ClassDescription("long", "scala.Long"),
-      ClassDescription("float", "scala.Float"),
-      ClassDescription("double", "scala.Double"),
-      ClassDescription("char", "scala.Char"),
-      ClassDescription("boolean", "scala.Boolean"),
-      ClassDescription("byte", "scala.Byte"),
-      ClassDescription("string", "java.lang.String"),
-      ClassDescription("seq", "scala.collection.immutable.Seq"),
-      ClassDescription("list", "scala.collection.immutable.List"),
-      ClassDescription("vector", "scala.collection.immutable.Vector"),
-      ClassDescription("option", "scala.Option"),
-      ClassDescription("map", "scala.collection.immutable.Map"),
-      ClassDescription("simple", "org.yankov.reflection.Simple")
+    ReflectionUtils.getFields[Complex] shouldBe List(
+      Field("short", classOf[Short]),
+      Field("int", classOf[Int]),
+      Field("long", classOf[Long]),
+      Field("float", classOf[Float]),
+      Field("double", classOf[Double]),
+      Field("char", classOf[Char]),
+      Field("boolean", classOf[Boolean]),
+      Field("byte", classOf[Byte]),
+      Field("string", classOf[String]),
+      Field("seq", classOf[Seq[_]]),
+      Field("list", classOf[List[_]]),
+      Field("vector", classOf[Vector[_]]),
+      Field("option", classOf[Option[_]]),
+      Field("map", classOf[Map[_, _]]),
+      Field("simple", classOf[Simple])
     )
   }
 
   "set field should succeed" in {
-    val instance = ReflectionUtils.createDefaultInstance("org.yankov.reflection.Simple").asInstanceOf[Simple]
+    val instance = ReflectionUtils.createDefaultInstance[Simple]
     ReflectionUtils.setField(instance, "id", 1) shouldBe Simple(1, "")
     ReflectionUtils.setField(instance, "name", "updated") shouldBe Simple(1, "updated")
   }

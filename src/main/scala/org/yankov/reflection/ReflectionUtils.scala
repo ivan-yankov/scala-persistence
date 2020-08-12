@@ -5,11 +5,18 @@ import org.slf4j.LoggerFactory
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
-case class ClassDescription(name: String, className: String)
+case class Field[T](name: String, cls: Class[T])
 
 object ReflectionUtils {
   private val log = LoggerFactory.getLogger(ReflectionUtils.getClass)
   private val runtimeUniverse = scala.reflect.runtime.universe
+
+  implicit class StringExtensions(s: String) {
+    def unifyTypeName: String = {
+      if (!s.contains(".")) "scala." + s.substring(0, 1).toUpperCase() + s.substring(1, s.length)
+      else s
+    }
+  }
 
   object Types {
     val short: String = "scala.Short"
@@ -33,46 +40,41 @@ object ReflectionUtils {
     )
   }
 
-  private def defaultValue(className: String): Any = className match {
-    case Types.short => 0.toShort
-    case Types.int => 0.toInt
-    case Types.long => 0.toLong
-    case Types.float => 0.0.toFloat
-    case Types.double => 0.0.toDouble
-    case Types.char => ' '
-    case Types.boolean => false
-    case Types.byte => 0.toByte
-    case Types.string => ""
-    case Types.seq => Seq()
-    case Types.list => List()
-    case Types.vector => Vector()
-    case Types.set => Set()
-    case Types.map => Map()
-    case Types.option => Option.empty
-    case _ => log.error(s"Undefined default value for type [$className]")
+  private def defaultValue[T](cls: Class[T]): Any = {
+    val className = cls.getName.unifyTypeName
+    className match {
+      case Types.short => 0.toShort
+      case Types.int => 0.toInt
+      case Types.long => 0.toLong
+      case Types.float => 0.0.toFloat
+      case Types.double => 0.0.toDouble
+      case Types.char => ' '
+      case Types.boolean => false
+      case Types.byte => 0.toByte
+      case Types.string => ""
+      case Types.seq => Seq()
+      case Types.list => List()
+      case Types.vector => Vector()
+      case Types.set => Set()
+      case Types.map => Map()
+      case Types.option => Option.empty
+      case _ => log.error(s"Undefined default value for type [$className]")
+    }
   }
 
-  def getFields(className: String): List[ClassDescription] = {
-    implicit class StringExtensions(s: String) {
-      def unifyTypeName: String = {
-        if (!s.contains(".")) "scala." + s.substring(0, 1).toUpperCase() + s.substring(1, s.length)
-        else s
-      }
-    }
-
-    Class
-      .forName(className)
+  def getFields[T](implicit m: Manifest[T]): List[Field[_]] = {
+    m.runtimeClass
       .getDeclaredFields
-      .map(x => ClassDescription(x.getName, x.getType.getName.unifyTypeName))
+      .map(x => Field(x.getName, x.getType))
       .toList
   }
 
-  def createDefaultInstance(className: String): Any = {
-    Class
-      .forName(className)
+  def createDefaultInstance[T](implicit m: Manifest[T]): T = {
+    m.runtimeClass
       .getConstructors
       .head
-      .newInstance(getFields(className).map(x => defaultValue(x.className)): _*)
+      .newInstance(getFields[T].map(x => defaultValue(x.cls)): _*)
+      .asInstanceOf[T]
   }
 
   def setField[T: ClassTag, V](instance: T, name: String, value: V)(implicit t: TypeTag[T]): T = {
