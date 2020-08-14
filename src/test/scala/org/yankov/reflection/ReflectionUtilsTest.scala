@@ -36,8 +36,13 @@ case class Complex(short: Short,
                    simple: Simple)
 
 class ReflectionUtilsTest extends WordSpec with Matchers {
-  "create default instance should succeed" in {
-    ReflectionUtils.createDefaultInstance[Base] shouldBe Base(
+  "create instance should succeed" in {
+    val parameters = ReflectionUtils
+      .getFields(classOf[Base])
+      .map(x => x.cls)
+      .map(x => ReflectionUtils.defaultValue(x))
+      .map(x => x.get)
+    ReflectionUtils.createInstance[Base](parameters) shouldBe Base(
       short = 0,
       int = 0,
       long = 0,
@@ -76,7 +81,7 @@ class ReflectionUtilsTest extends WordSpec with Matchers {
   }
 
   "set field should succeed" in {
-    val instance = ReflectionUtils.createDefaultInstance[Simple]
+    val instance = ReflectionUtils.createInstance[Simple](List(0, ""))
     ReflectionUtils.setField(instance, "id", 1) shouldBe Simple(1, "")
     ReflectionUtils.setField(instance, "name", "updated") shouldBe Simple(1, "updated")
   }

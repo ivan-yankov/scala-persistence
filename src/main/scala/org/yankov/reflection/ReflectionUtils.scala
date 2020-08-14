@@ -1,14 +1,11 @@
 package org.yankov.reflection
 
-import org.slf4j.LoggerFactory
-
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
 case class Field(name: String, cls: Class[_])
 
 object ReflectionUtils {
-  private val log = LoggerFactory.getLogger(ReflectionUtils.getClass)
   private val runtimeUniverse = scala.reflect.runtime.universe
 
   implicit class StringExtensions(s: String) {
@@ -40,7 +37,7 @@ object ReflectionUtils {
     )
   }
 
-  private def defaultValue[T](cls: Class[T]): T = {
+  def defaultValue[T](cls: Class[T]): Option[T] = {
     val value = cls match {
       case Classes.short => 0.toShort
       case Classes.int => 0.toInt
@@ -57,9 +54,12 @@ object ReflectionUtils {
       case Classes.set => Set()
       case Classes.map => Map()
       case Classes.option => Option.empty
-      case _ => log.error(s"Undefined default value for type [${cls.getName}]")
+      case _ => ()
     }
-    value.asInstanceOf[T]
+    value match {
+      case _: Unit => Option.empty
+      case _ => Option(value.asInstanceOf[T])
+    }
   }
 
   def getFields(cls: Class[_]): List[Field] = {
@@ -69,12 +69,15 @@ object ReflectionUtils {
       .toList
   }
 
-  def createDefaultInstance[T](implicit m: Manifest[T]): T = {
-    val cls = m.runtimeClass
+  def createInstance[T](parameters: List[Any])(implicit m: Manifest[T]): T = {
+    createInstance(m.runtimeClass, parameters).asInstanceOf[T]
+  }
+
+  def createInstance[T](cls: Class[T], parameters: List[Any]): T = {
     cls
       .getConstructors
       .head
-      .newInstance(getFields(cls).map(x => defaultValue(x.cls)): _*)
+      .newInstance(parameters: _*)
       .asInstanceOf[T]
   }
 
