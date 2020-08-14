@@ -28,9 +28,20 @@ object JsonDeserializer {
     else ReflectionUtils.getFields(parent.cls)
   }
 
+  implicit def aggregate(parent: DefaultValue, children: List[DefaultValue]): DefaultValue =
+    DefaultValue(parent.name, parent.cls, ReflectionUtils.createInstance(parent.cls, children.map(x => x.value)))
+
+  case class DefaultValue(name: String, cls: Class[_], value: Any)
+
   def fromJson[T: ClassTag](json: String)(implicit m: Manifest[T]): Unit = {
     val jsonFlatten = Tree(JsonNodeString("", json)).flat()
-    val classFlatten = Tree(Field("", m.runtimeClass)).flat()
-    classFlatten
+    val defaultValues = Tree(Field("", m.runtimeClass))
+      .map(x => {
+        ReflectionUtils.defaultValue(x.cls) match {
+          case Some(value) => DefaultValue(x.name, x.cls, value)
+          case None => DefaultValue(x.name, x.cls, ())
+        }
+      })
+    defaultValues
   }
 }
