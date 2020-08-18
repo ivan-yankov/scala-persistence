@@ -1,6 +1,7 @@
 package org.yankov.serialization.json
 
 import org.yankov.datastructures.Tree
+import org.yankov.datastructures.TreeModel._
 import org.yankov.reflection.{Field, ReflectionUtils}
 import org.yankov.serialization.json.JsonCommons._
 import org.yankov.serialization.json.JsonDataModel.JsonNodeString
@@ -8,6 +9,8 @@ import org.yankov.serialization.json.JsonDataModel.JsonNodeString
 import scala.reflect.ClassTag
 
 object JsonDeserializer {
+  case class FieldValue(name: String, cls: Class[_], jsonNodes: List[JsonNodeString], value: Option[Any] = Option.empty)
+
   implicit def getChildren(node: JsonNodeString): List[JsonNodeString] = {
     if (node.value.startsWith(openObject) && node.value.endsWith(closeObject)) {
       node.value
@@ -28,20 +31,32 @@ object JsonDeserializer {
     else ReflectionUtils.getFields(parent.cls)
   }
 
-  implicit def aggregate(parent: DefaultValue, children: List[DefaultValue]): DefaultValue =
-    DefaultValue(parent.name, parent.cls, ReflectionUtils.createInstance(parent.cls, children.map(x => x.value)))
+  implicit def aggregate(parent: FieldValue, children: List[FieldValue]): FieldValue = {
+    val defaultValues = children.map(x => {
+      if (x.value.nonEmpty) x.value
+      else ReflectionUtils.defaultValue(x.cls)
+    })
+    .map(x => x.get)
 
-  case class DefaultValue(name: String, cls: Class[_], value: Any)
+    FieldValue(
+      parent.name,
+      parent.cls,
+      parent.jsonNodes,
+      Option(ReflectionUtils.createInstance(parent.cls, defaultValues))
+    )
+  }
 
   def fromJson[T: ClassTag](json: String)(implicit m: Manifest[T]): Unit = {
     val jsonFlatten = Tree(JsonNodeString("", json)).flat()
-    val defaultValues = Tree(Field("", m.runtimeClass))
-      .map(x => {
-        ReflectionUtils.defaultValue(x.cls) match {
-          case Some(value) => DefaultValue(x.name, x.cls, value)
-          case None => DefaultValue(x.name, x.cls, ())
-        }
-      })
-    defaultValues
+    val result = Tree(Field("", m.runtimeClass))
+      .flat()
+      .map(x => Node[FieldValue](
+        x.level,
+        x.index,
+        x.parentIndex,
+        FieldValue(x.data.name, x.data.cls, jsonFlatten.filter(y => x.level == y.level).map(x => x.data)))
+      )
+      .build()
+    result
   }
 }
