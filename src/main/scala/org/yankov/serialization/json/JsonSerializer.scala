@@ -81,7 +81,7 @@ object JsonSerializer {
           .mkString(elementSeparator)
       }
     }
-      r.wrapJsonArray()
+    r.wrapJsonArray()
   }
 
   private def formatJsonString(json: String): String = {

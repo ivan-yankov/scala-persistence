@@ -1,5 +1,7 @@
 package org.yankov.reflection
 
+import org.yankov.serialization.json.JsonDataModel.Bytes
+
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
@@ -24,6 +26,7 @@ object ReflectionUtils {
     val char: Class[Char] = classOf[Char]
     val boolean: Class[Boolean] = classOf[Boolean]
     val byte: Class[Byte] = classOf[Byte]
+    val bytes: Class[Bytes] = classOf[Bytes]
     val string: Class[String] = classOf[String]
     val seq: Class[Seq[_]] = classOf[Seq[_]]
     val list: Class[List[_]] = classOf[List[_]]
@@ -81,13 +84,14 @@ object ReflectionUtils {
       .asInstanceOf[T]
   }
 
-  def setField[T: ClassTag, V](instance: T, name: String, value: V)(implicit t: TypeTag[T]): T = {
-    val runtimeMirror = runtimeUniverse.runtimeMirror(instance.getClass.getClassLoader)
-    val instanceMirror = runtimeMirror.reflect(instance)
-    val fieldTerm = runtimeUniverse.TermName(name)
-    val fieldSymbol = runtimeUniverse.typeOf[T].decl(fieldTerm).asTerm.accessed.asTerm
-    val fieldMirror = instanceMirror.reflectField(fieldSymbol)
-    fieldMirror.set(value)
+  def setField[T, V](instance: T, name: String, value: V): T = {
+    val field = instance.getClass.getDeclaredField(name)
+    field.setAccessible(true)
+    field.set(instance, value)
     instance
+  }
+
+  def getType[T](x: T)(implicit tag: TypeTag[T]): List[Type] = tag.tpe match {
+    case TypeRef(_, _, args) => args
   }
 }
