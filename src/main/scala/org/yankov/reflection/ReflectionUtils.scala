@@ -1,15 +1,10 @@
 package org.yankov.reflection
 
-import org.yankov.serialization.json.JsonDataModel.Bytes
-
-import scala.reflect.ClassTag
-import scala.reflect.runtime.universe._
+import org.yankov.serialization.xml.XmlDataModel.Bytes
 
 case class Field(name: String, cls: Class[_])
 
 object ReflectionUtils {
-  private val runtimeUniverse = scala.reflect.runtime.universe
-
   implicit class StringExtensions(s: String) {
     def unifyTypeName: String = {
       if (!s.contains(".")) "scala." + s.substring(0, 1).toUpperCase() + s.substring(1, s.length)
@@ -89,9 +84,5 @@ object ReflectionUtils {
     field.setAccessible(true)
     field.set(instance, value)
     instance
-  }
-
-  def getType[T](x: T)(implicit tag: TypeTag[T]): List[Type] = tag.tpe match {
-    case TypeRef(_, _, args) => args
   }
 }

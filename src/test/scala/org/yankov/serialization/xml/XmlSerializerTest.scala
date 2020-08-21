@@ -1,11 +1,11 @@
-package org.yankov.serialization.json
+package org.yankov.serialization.xml
 
-import org.scalatest.{Matchers, WordSpec}
-import org.yankov.serialization.json.JsonDataModel.Bytes
+import org.scalatest.{Ignore, Matchers, WordSpec}
+import org.yankov.serialization.xml.XmlDataModel.Bytes
 
 import scala.io.Source
 
-class JsonSerializerTest extends WordSpec with Matchers {
+class XmlSerializerTest extends WordSpec with Matchers {
   private def createEntity(numberOfChildren: Int): Entity = Entity(
     short = 1,
     int = 30000,
@@ -37,24 +37,18 @@ class JsonSerializerTest extends WordSpec with Matchers {
 
   "json serialization should succeed" in {
     val entity = createEntity(0)
-    val result = JsonSerializer.toJson(entity)
-    result shouldBe Source.fromResource("serialization-expected.json").getLines.toList.head
+    val result = XmlSerializer.serialize(entity)
+    result shouldBe Source.fromResource("entity.xml").getLines.toList.mkString("\n")
   }
 
   "json serialization with recursion should succeed" in {
     val entity = createEntity(5)
-    val result = JsonSerializer.toJson(entity)
-    result shouldBe Source.fromResource("serialization-recursion-expected.json").getLines.toList.head
+    val result = XmlSerializer.serialize(entity)
+    result shouldBe Source.fromResource("entity-recursion.xml").getLines.toList.mkString("\n")
   }
 
   "json serialization with deep recursion should not throw StackOverflowException" in {
-    val entity = createEntity(1000)
-    JsonSerializer.toJson(entity)
-  }
-
-  "json serialization should produce formatted json" in {
-    val entity = createEntity(0)
-    val result = JsonSerializer.toJson(entity, format = true)
-    result shouldBe Source.fromResource("serialization-formatted-expected.json").getLines.toList.mkString("\n")
+    val entity = createEntity(200)
+    XmlSerializer.serialize(entity)
   }
 }

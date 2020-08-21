@@ -1,6 +1,6 @@
-package org.yankov.serialization.json
+package org.yankov.serialization.xml
 
-import org.yankov.serialization.json.JsonDataModel.Bytes
+import org.yankov.serialization.xml.XmlDataModel.Bytes
 
 case class Dependency(id: String, description: String)
 

@@ -1,0 +1,1122 @@
+<object type="Object" className="org.yankov.serialization.xml.Entity">
+  <short type="Short">1</short>
+  <int type="Int">30000</int>
+  <long type="Long">5000000000</long>
+  <float type="Float">123.4567871093750000</float>
+  <double type="Double">123456789.1234567900000000</double>
+  <char type="Char">A</char>
+  <boolean1 type="Boolean">true</boolean1>
+  <boolean2 type="Boolean">false</boolean2>
+  <byte type="Byte">Ig</byte>
+  <bytes type="Bytes">AQIDBAU</bytes>
+  <string type="String">serialization test</string>
+  <emptySeq type="Seq">
+  </emptySeq>
+  <valuesSeq type="Seq">
+    <element type="Int">1</element>
+    <element type="Int">2</element>
+    <element type="Int">3</element>
+    <element type="Int">4</element>
+    <element type="Int">5</element>
+  </valuesSeq>
+  <objectSeq type="Seq">
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">1</id>
+      <description type="String">d1</description>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">2</id>
+      <description type="String">d2</description>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">3</id>
+      <description type="String">d3</description>
+    </element>
+  </objectSeq>
+  <arraySeq type="Seq">
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">0.0000000000000000</element>
+      <element type="Double">0.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">1.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">2.0000000000000000</element>
+      <element type="Double">4.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">3.0000000000000000</element>
+      <element type="Double">9.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">4.0000000000000000</element>
+      <element type="Double">16.0000000000000000</element>
+    </element>
+  </arraySeq>
+  <valuesList type="Seq">
+    <element type="Int">1</element>
+    <element type="Int">2</element>
+    <element type="Int">3</element>
+    <element type="Int">4</element>
+    <element type="Int">5</element>
+  </valuesList>
+  <objectList type="Seq">
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">1</id>
+      <description type="String">d1</description>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">2</id>
+      <description type="String">d2</description>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">3</id>
+      <description type="String">d3</description>
+    </element>
+  </objectList>
+  <arrayList type="Seq">
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">0.0000000000000000</element>
+      <element type="Double">0.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">1.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">2.0000000000000000</element>
+      <element type="Double">4.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">3.0000000000000000</element>
+      <element type="Double">9.0000000000000000</element>
+    </element>
+    <element type="Seq">
+      <element type="Double">1.0000000000000000</element>
+      <element type="Double">4.0000000000000000</element>
+      <element type="Double">16.0000000000000000</element>
+    </element>
+  </arrayList>
+  <valuesVector type="Seq">
+    <element type="Int">1</element>
+    <element type="Int">2</element>
+    <element type="Int">3</element>
+    <element type="Int">4</element>
+    <element type="Int">5</element>
+  </valuesVector>
+  <objectVector type="Seq">
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">1</id>
+      <description type="String">d1</description>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">2</id>
+      <description type="String">d2</description>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">3</id>
+      <description type="String">d3</description>
+    </element>
+  </objectVector>
+  <arrayVector type="Seq">
+    <element type="Seq">
+    <element type="Double">1.0000000000000000</element>
+    <element type="Double">0.0000000000000000</element>
+    <element type="Double">0.0000000000000000</element>
+    </element>
+    <element type="Seq">
+    <element type="Double">1.0000000000000000</element>
+    <element type="Double">1.0000000000000000</element>
+    <element type="Double">1.0000000000000000</element>
+    </element>
+    <element type="Seq">
+    <element type="Double">1.0000000000000000</element>
+    <element type="Double">2.0000000000000000</element>
+    <element type="Double">4.0000000000000000</element>
+    </element>
+    <element type="Seq">
+    <element type="Double">1.0000000000000000</element>
+    <element type="Double">3.0000000000000000</element>
+    <element type="Double">9.0000000000000000</element>
+    </element>
+    <element type="Seq">
+    <element type="Double">1.0000000000000000</element>
+    <element type="Double">4.0000000000000000</element>
+    <element type="Double">16.0000000000000000</element>
+    </element>
+  </arrayVector>
+  <pair type="Object" className="org.yankov.serialization.xml.Pair">
+    <id type="Int">1</id>
+    <dependency type="Object" className="org.yankov.serialization.xml.Dependency">
+      <id type="String">id</id>
+      <description type="String">description</description>
+    </dependency>
+  </pair>
+  <option1 type="Option">
+    <value type="String">present</value>
+  </option1>
+  <option2 type="Option">
+  </option2>
+  <child type="Option">
+    <value type="Object" className="org.yankov.serialization.xml.Entity">
+      <short type="Short">1</short>
+      <int type="Int">30000</int>
+      <long type="Long">5000000000</long>
+      <float type="Float">123.4567871093750000</float>
+      <double type="Double">123456789.1234567900000000</double>
+      <char type="Char">A</char>
+      <boolean1 type="Boolean">true</boolean1>
+      <boolean2 type="Boolean">false</boolean2>
+      <byte type="Byte">Ig</byte>
+      <bytes type="Bytes">AQIDBAU</bytes>
+      <string type="String">serialization test</string>
+      <emptySeq type="Seq">
+      </emptySeq>
+      <valuesSeq type="Seq">
+        <element type="Int">1</element>
+        <element type="Int">2</element>
+        <element type="Int">3</element>
+        <element type="Int">4</element>
+        <element type="Int">5</element>
+      </valuesSeq>
+      <objectSeq type="Seq">
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">1</id>
+          <description type="String">d1</description>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">2</id>
+          <description type="String">d2</description>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">3</id>
+          <description type="String">d3</description>
+        </element>
+      </objectSeq>
+      <arraySeq type="Seq">
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">0.0000000000000000</element>
+          <element type="Double">0.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">1.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">2.0000000000000000</element>
+          <element type="Double">4.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">3.0000000000000000</element>
+          <element type="Double">9.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">4.0000000000000000</element>
+          <element type="Double">16.0000000000000000</element>
+        </element>
+      </arraySeq>
+      <valuesList type="Seq">
+        <element type="Int">1</element>
+        <element type="Int">2</element>
+        <element type="Int">3</element>
+        <element type="Int">4</element>
+        <element type="Int">5</element>
+      </valuesList>
+      <objectList type="Seq">
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">1</id>
+          <description type="String">d1</description>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">2</id>
+          <description type="String">d2</description>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">3</id>
+          <description type="String">d3</description>
+        </element>
+      </objectList>
+      <arrayList type="Seq">
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">0.0000000000000000</element>
+          <element type="Double">0.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">1.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">2.0000000000000000</element>
+          <element type="Double">4.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">3.0000000000000000</element>
+          <element type="Double">9.0000000000000000</element>
+        </element>
+        <element type="Seq">
+          <element type="Double">1.0000000000000000</element>
+          <element type="Double">4.0000000000000000</element>
+          <element type="Double">16.0000000000000000</element>
+        </element>
+      </arrayList>
+      <valuesVector type="Seq">
+        <element type="Int">1</element>
+        <element type="Int">2</element>
+        <element type="Int">3</element>
+        <element type="Int">4</element>
+        <element type="Int">5</element>
+      </valuesVector>
+      <objectVector type="Seq">
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">1</id>
+          <description type="String">d1</description>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">2</id>
+          <description type="String">d2</description>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">3</id>
+          <description type="String">d3</description>
+        </element>
+      </objectVector>
+      <arrayVector type="Seq">
+        <element type="Seq">
+        <element type="Double">1.0000000000000000</element>
+        <element type="Double">0.0000000000000000</element>
+        <element type="Double">0.0000000000000000</element>
+        </element>
+        <element type="Seq">
+        <element type="Double">1.0000000000000000</element>
+        <element type="Double">1.0000000000000000</element>
+        <element type="Double">1.0000000000000000</element>
+        </element>
+        <element type="Seq">
+        <element type="Double">1.0000000000000000</element>
+        <element type="Double">2.0000000000000000</element>
+        <element type="Double">4.0000000000000000</element>
+        </element>
+        <element type="Seq">
+        <element type="Double">1.0000000000000000</element>
+        <element type="Double">3.0000000000000000</element>
+        <element type="Double">9.0000000000000000</element>
+        </element>
+        <element type="Seq">
+        <element type="Double">1.0000000000000000</element>
+        <element type="Double">4.0000000000000000</element>
+        <element type="Double">16.0000000000000000</element>
+        </element>
+      </arrayVector>
+      <pair type="Object" className="org.yankov.serialization.xml.Pair">
+        <id type="Int">1</id>
+        <dependency type="Object" className="org.yankov.serialization.xml.Dependency">
+          <id type="String">id</id>
+          <description type="String">description</description>
+        </dependency>
+      </pair>
+      <option1 type="Option">
+        <value type="String">present</value>
+      </option1>
+      <option2 type="Option">
+      </option2>
+      <child type="Option">
+        <value type="Object" className="org.yankov.serialization.xml.Entity">
+          <short type="Short">1</short>
+          <int type="Int">30000</int>
+          <long type="Long">5000000000</long>
+          <float type="Float">123.4567871093750000</float>
+          <double type="Double">123456789.1234567900000000</double>
+          <char type="Char">A</char>
+          <boolean1 type="Boolean">true</boolean1>
+          <boolean2 type="Boolean">false</boolean2>
+          <byte type="Byte">Ig</byte>
+          <bytes type="Bytes">AQIDBAU</bytes>
+          <string type="String">serialization test</string>
+          <emptySeq type="Seq">
+          </emptySeq>
+          <valuesSeq type="Seq">
+            <element type="Int">1</element>
+            <element type="Int">2</element>
+            <element type="Int">3</element>
+            <element type="Int">4</element>
+            <element type="Int">5</element>
+          </valuesSeq>
+          <objectSeq type="Seq">
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">1</id>
+              <description type="String">d1</description>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">2</id>
+              <description type="String">d2</description>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">3</id>
+              <description type="String">d3</description>
+            </element>
+          </objectSeq>
+          <arraySeq type="Seq">
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">0.0000000000000000</element>
+              <element type="Double">0.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">1.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">2.0000000000000000</element>
+              <element type="Double">4.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">3.0000000000000000</element>
+              <element type="Double">9.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">4.0000000000000000</element>
+              <element type="Double">16.0000000000000000</element>
+            </element>
+          </arraySeq>
+          <valuesList type="Seq">
+            <element type="Int">1</element>
+            <element type="Int">2</element>
+            <element type="Int">3</element>
+            <element type="Int">4</element>
+            <element type="Int">5</element>
+          </valuesList>
+          <objectList type="Seq">
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">1</id>
+              <description type="String">d1</description>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">2</id>
+              <description type="String">d2</description>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">3</id>
+              <description type="String">d3</description>
+            </element>
+          </objectList>
+          <arrayList type="Seq">
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">0.0000000000000000</element>
+              <element type="Double">0.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">1.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">2.0000000000000000</element>
+              <element type="Double">4.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">3.0000000000000000</element>
+              <element type="Double">9.0000000000000000</element>
+            </element>
+            <element type="Seq">
+              <element type="Double">1.0000000000000000</element>
+              <element type="Double">4.0000000000000000</element>
+              <element type="Double">16.0000000000000000</element>
+            </element>
+          </arrayList>
+          <valuesVector type="Seq">
+            <element type="Int">1</element>
+            <element type="Int">2</element>
+            <element type="Int">3</element>
+            <element type="Int">4</element>
+            <element type="Int">5</element>
+          </valuesVector>
+          <objectVector type="Seq">
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">1</id>
+              <description type="String">d1</description>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">2</id>
+              <description type="String">d2</description>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">3</id>
+              <description type="String">d3</description>
+            </element>
+          </objectVector>
+          <arrayVector type="Seq">
+            <element type="Seq">
+            <element type="Double">1.0000000000000000</element>
+            <element type="Double">0.0000000000000000</element>
+            <element type="Double">0.0000000000000000</element>
+            </element>
+            <element type="Seq">
+            <element type="Double">1.0000000000000000</element>
+            <element type="Double">1.0000000000000000</element>
+            <element type="Double">1.0000000000000000</element>
+            </element>
+            <element type="Seq">
+            <element type="Double">1.0000000000000000</element>
+            <element type="Double">2.0000000000000000</element>
+            <element type="Double">4.0000000000000000</element>
+            </element>
+            <element type="Seq">
+            <element type="Double">1.0000000000000000</element>
+            <element type="Double">3.0000000000000000</element>
+            <element type="Double">9.0000000000000000</element>
+            </element>
+            <element type="Seq">
+            <element type="Double">1.0000000000000000</element>
+            <element type="Double">4.0000000000000000</element>
+            <element type="Double">16.0000000000000000</element>
+            </element>
+          </arrayVector>
+          <pair type="Object" className="org.yankov.serialization.xml.Pair">
+            <id type="Int">1</id>
+            <dependency type="Object" className="org.yankov.serialization.xml.Dependency">
+              <id type="String">id</id>
+              <description type="String">description</description>
+            </dependency>
+          </pair>
+          <option1 type="Option">
+            <value type="String">present</value>
+          </option1>
+          <option2 type="Option">
+          </option2>
+          <child type="Option">
+            <value type="Object" className="org.yankov.serialization.xml.Entity">
+              <short type="Short">1</short>
+              <int type="Int">30000</int>
+              <long type="Long">5000000000</long>
+              <float type="Float">123.4567871093750000</float>
+              <double type="Double">123456789.1234567900000000</double>
+              <char type="Char">A</char>
+              <boolean1 type="Boolean">true</boolean1>
+              <boolean2 type="Boolean">false</boolean2>
+              <byte type="Byte">Ig</byte>
+              <bytes type="Bytes">AQIDBAU</bytes>
+              <string type="String">serialization test</string>
+              <emptySeq type="Seq">
+              </emptySeq>
+              <valuesSeq type="Seq">
+                <element type="Int">1</element>
+                <element type="Int">2</element>
+                <element type="Int">3</element>
+                <element type="Int">4</element>
+                <element type="Int">5</element>
+              </valuesSeq>
+              <objectSeq type="Seq">
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">1</id>
+                  <description type="String">d1</description>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">2</id>
+                  <description type="String">d2</description>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">3</id>
+                  <description type="String">d3</description>
+                </element>
+              </objectSeq>
+              <arraySeq type="Seq">
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">0.0000000000000000</element>
+                  <element type="Double">0.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">1.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">2.0000000000000000</element>
+                  <element type="Double">4.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">3.0000000000000000</element>
+                  <element type="Double">9.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">4.0000000000000000</element>
+                  <element type="Double">16.0000000000000000</element>
+                </element>
+              </arraySeq>
+              <valuesList type="Seq">
+                <element type="Int">1</element>
+                <element type="Int">2</element>
+                <element type="Int">3</element>
+                <element type="Int">4</element>
+                <element type="Int">5</element>
+              </valuesList>
+              <objectList type="Seq">
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">1</id>
+                  <description type="String">d1</description>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">2</id>
+                  <description type="String">d2</description>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">3</id>
+                  <description type="String">d3</description>
+                </element>
+              </objectList>
+              <arrayList type="Seq">
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">0.0000000000000000</element>
+                  <element type="Double">0.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">1.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">2.0000000000000000</element>
+                  <element type="Double">4.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">3.0000000000000000</element>
+                  <element type="Double">9.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                  <element type="Double">1.0000000000000000</element>
+                  <element type="Double">4.0000000000000000</element>
+                  <element type="Double">16.0000000000000000</element>
+                </element>
+              </arrayList>
+              <valuesVector type="Seq">
+                <element type="Int">1</element>
+                <element type="Int">2</element>
+                <element type="Int">3</element>
+                <element type="Int">4</element>
+                <element type="Int">5</element>
+              </valuesVector>
+              <objectVector type="Seq">
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">1</id>
+                  <description type="String">d1</description>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">2</id>
+                  <description type="String">d2</description>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">3</id>
+                  <description type="String">d3</description>
+                </element>
+              </objectVector>
+              <arrayVector type="Seq">
+                <element type="Seq">
+                <element type="Double">1.0000000000000000</element>
+                <element type="Double">0.0000000000000000</element>
+                <element type="Double">0.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                <element type="Double">1.0000000000000000</element>
+                <element type="Double">1.0000000000000000</element>
+                <element type="Double">1.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                <element type="Double">1.0000000000000000</element>
+                <element type="Double">2.0000000000000000</element>
+                <element type="Double">4.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                <element type="Double">1.0000000000000000</element>
+                <element type="Double">3.0000000000000000</element>
+                <element type="Double">9.0000000000000000</element>
+                </element>
+                <element type="Seq">
+                <element type="Double">1.0000000000000000</element>
+                <element type="Double">4.0000000000000000</element>
+                <element type="Double">16.0000000000000000</element>
+                </element>
+              </arrayVector>
+              <pair type="Object" className="org.yankov.serialization.xml.Pair">
+                <id type="Int">1</id>
+                <dependency type="Object" className="org.yankov.serialization.xml.Dependency">
+                  <id type="String">id</id>
+                  <description type="String">description</description>
+                </dependency>
+              </pair>
+              <option1 type="Option">
+                <value type="String">present</value>
+              </option1>
+              <option2 type="Option">
+              </option2>
+              <child type="Option">
+                <value type="Object" className="org.yankov.serialization.xml.Entity">
+                  <short type="Short">1</short>
+                  <int type="Int">30000</int>
+                  <long type="Long">5000000000</long>
+                  <float type="Float">123.4567871093750000</float>
+                  <double type="Double">123456789.1234567900000000</double>
+                  <char type="Char">A</char>
+                  <boolean1 type="Boolean">true</boolean1>
+                  <boolean2 type="Boolean">false</boolean2>
+                  <byte type="Byte">Ig</byte>
+                  <bytes type="Bytes">AQIDBAU</bytes>
+                  <string type="String">serialization test</string>
+                  <emptySeq type="Seq">
+                  </emptySeq>
+                  <valuesSeq type="Seq">
+                    <element type="Int">1</element>
+                    <element type="Int">2</element>
+                    <element type="Int">3</element>
+                    <element type="Int">4</element>
+                    <element type="Int">5</element>
+                  </valuesSeq>
+                  <objectSeq type="Seq">
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">1</id>
+                      <description type="String">d1</description>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">2</id>
+                      <description type="String">d2</description>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">3</id>
+                      <description type="String">d3</description>
+                    </element>
+                  </objectSeq>
+                  <arraySeq type="Seq">
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">0.0000000000000000</element>
+                      <element type="Double">0.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">1.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">2.0000000000000000</element>
+                      <element type="Double">4.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">3.0000000000000000</element>
+                      <element type="Double">9.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">4.0000000000000000</element>
+                      <element type="Double">16.0000000000000000</element>
+                    </element>
+                  </arraySeq>
+                  <valuesList type="Seq">
+                    <element type="Int">1</element>
+                    <element type="Int">2</element>
+                    <element type="Int">3</element>
+                    <element type="Int">4</element>
+                    <element type="Int">5</element>
+                  </valuesList>
+                  <objectList type="Seq">
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">1</id>
+                      <description type="String">d1</description>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">2</id>
+                      <description type="String">d2</description>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">3</id>
+                      <description type="String">d3</description>
+                    </element>
+                  </objectList>
+                  <arrayList type="Seq">
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">0.0000000000000000</element>
+                      <element type="Double">0.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">1.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">2.0000000000000000</element>
+                      <element type="Double">4.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">3.0000000000000000</element>
+                      <element type="Double">9.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                      <element type="Double">1.0000000000000000</element>
+                      <element type="Double">4.0000000000000000</element>
+                      <element type="Double">16.0000000000000000</element>
+                    </element>
+                  </arrayList>
+                  <valuesVector type="Seq">
+                    <element type="Int">1</element>
+                    <element type="Int">2</element>
+                    <element type="Int">3</element>
+                    <element type="Int">4</element>
+                    <element type="Int">5</element>
+                  </valuesVector>
+                  <objectVector type="Seq">
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">1</id>
+                      <description type="String">d1</description>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">2</id>
+                      <description type="String">d2</description>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">3</id>
+                      <description type="String">d3</description>
+                    </element>
+                  </objectVector>
+                  <arrayVector type="Seq">
+                    <element type="Seq">
+                    <element type="Double">1.0000000000000000</element>
+                    <element type="Double">0.0000000000000000</element>
+                    <element type="Double">0.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                    <element type="Double">1.0000000000000000</element>
+                    <element type="Double">1.0000000000000000</element>
+                    <element type="Double">1.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                    <element type="Double">1.0000000000000000</element>
+                    <element type="Double">2.0000000000000000</element>
+                    <element type="Double">4.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                    <element type="Double">1.0000000000000000</element>
+                    <element type="Double">3.0000000000000000</element>
+                    <element type="Double">9.0000000000000000</element>
+                    </element>
+                    <element type="Seq">
+                    <element type="Double">1.0000000000000000</element>
+                    <element type="Double">4.0000000000000000</element>
+                    <element type="Double">16.0000000000000000</element>
+                    </element>
+                  </arrayVector>
+                  <pair type="Object" className="org.yankov.serialization.xml.Pair">
+                    <id type="Int">1</id>
+                    <dependency type="Object" className="org.yankov.serialization.xml.Dependency">
+                      <id type="String">id</id>
+                      <description type="String">description</description>
+                    </dependency>
+                  </pair>
+                  <option1 type="Option">
+                    <value type="String">present</value>
+                  </option1>
+                  <option2 type="Option">
+                  </option2>
+                  <child type="Option">
+                    <value type="Object" className="org.yankov.serialization.xml.Entity">
+                      <short type="Short">1</short>
+                      <int type="Int">30000</int>
+                      <long type="Long">5000000000</long>
+                      <float type="Float">123.4567871093750000</float>
+                      <double type="Double">123456789.1234567900000000</double>
+                      <char type="Char">A</char>
+                      <boolean1 type="Boolean">true</boolean1>
+                      <boolean2 type="Boolean">false</boolean2>
+                      <byte type="Byte">Ig</byte>
+                      <bytes type="Bytes">AQIDBAU</bytes>
+                      <string type="String">serialization test</string>
+                      <emptySeq type="Seq">
+                      </emptySeq>
+                      <valuesSeq type="Seq">
+                        <element type="Int">1</element>
+                        <element type="Int">2</element>
+                        <element type="Int">3</element>
+                        <element type="Int">4</element>
+                        <element type="Int">5</element>
+                      </valuesSeq>
+                      <objectSeq type="Seq">
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">1</id>
+                          <description type="String">d1</description>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">2</id>
+                          <description type="String">d2</description>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">3</id>
+                          <description type="String">d3</description>
+                        </element>
+                      </objectSeq>
+                      <arraySeq type="Seq">
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">0.0000000000000000</element>
+                          <element type="Double">0.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">1.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">2.0000000000000000</element>
+                          <element type="Double">4.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">3.0000000000000000</element>
+                          <element type="Double">9.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">4.0000000000000000</element>
+                          <element type="Double">16.0000000000000000</element>
+                        </element>
+                      </arraySeq>
+                      <valuesList type="Seq">
+                        <element type="Int">1</element>
+                        <element type="Int">2</element>
+                        <element type="Int">3</element>
+                        <element type="Int">4</element>
+                        <element type="Int">5</element>
+                      </valuesList>
+                      <objectList type="Seq">
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">1</id>
+                          <description type="String">d1</description>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">2</id>
+                          <description type="String">d2</description>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">3</id>
+                          <description type="String">d3</description>
+                        </element>
+                      </objectList>
+                      <arrayList type="Seq">
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">0.0000000000000000</element>
+                          <element type="Double">0.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">1.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">2.0000000000000000</element>
+                          <element type="Double">4.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">3.0000000000000000</element>
+                          <element type="Double">9.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                          <element type="Double">1.0000000000000000</element>
+                          <element type="Double">4.0000000000000000</element>
+                          <element type="Double">16.0000000000000000</element>
+                        </element>
+                      </arrayList>
+                      <valuesVector type="Seq">
+                        <element type="Int">1</element>
+                        <element type="Int">2</element>
+                        <element type="Int">3</element>
+                        <element type="Int">4</element>
+                        <element type="Int">5</element>
+                      </valuesVector>
+                      <objectVector type="Seq">
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">1</id>
+                          <description type="String">d1</description>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">2</id>
+                          <description type="String">d2</description>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">3</id>
+                          <description type="String">d3</description>
+                        </element>
+                      </objectVector>
+                      <arrayVector type="Seq">
+                        <element type="Seq">
+                        <element type="Double">1.0000000000000000</element>
+                        <element type="Double">0.0000000000000000</element>
+                        <element type="Double">0.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                        <element type="Double">1.0000000000000000</element>
+                        <element type="Double">1.0000000000000000</element>
+                        <element type="Double">1.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                        <element type="Double">1.0000000000000000</element>
+                        <element type="Double">2.0000000000000000</element>
+                        <element type="Double">4.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                        <element type="Double">1.0000000000000000</element>
+                        <element type="Double">3.0000000000000000</element>
+                        <element type="Double">9.0000000000000000</element>
+                        </element>
+                        <element type="Seq">
+                        <element type="Double">1.0000000000000000</element>
+                        <element type="Double">4.0000000000000000</element>
+                        <element type="Double">16.0000000000000000</element>
+                        </element>
+                      </arrayVector>
+                      <pair type="Object" className="org.yankov.serialization.xml.Pair">
+                        <id type="Int">1</id>
+                        <dependency type="Object" className="org.yankov.serialization.xml.Dependency">
+                          <id type="String">id</id>
+                          <description type="String">description</description>
+                        </dependency>
+                      </pair>
+                      <option1 type="Option">
+                        <value type="String">present</value>
+                      </option1>
+                      <option2 type="Option">
+                      </option2>
+                      <child type="Option">
+                      </child>
+                      <map type="Map">
+                        <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                          <key type="Int">1</key>
+                          <value type="String">one</value>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                          <key type="Int">2</key>
+                          <value type="String">two</value>
+                        </element>
+                        <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                          <key type="Int">3</key>
+                          <value type="String">three</value>
+                        </element>
+                      </map>
+                    </value>
+                  </child>
+                  <map type="Map">
+                    <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                      <key type="Int">1</key>
+                      <value type="String">one</value>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                      <key type="Int">2</key>
+                      <value type="String">two</value>
+                    </element>
+                    <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                      <key type="Int">3</key>
+                      <value type="String">three</value>
+                    </element>
+                  </map>
+                </value>
+              </child>
+              <map type="Map">
+                <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                  <key type="Int">1</key>
+                  <value type="String">one</value>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                  <key type="Int">2</key>
+                  <value type="String">two</value>
+                </element>
+                <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+                  <key type="Int">3</key>
+                  <value type="String">three</value>
+                </element>
+              </map>
+            </value>
+          </child>
+          <map type="Map">
+            <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+              <key type="Int">1</key>
+              <value type="String">one</value>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+              <key type="Int">2</key>
+              <value type="String">two</value>
+            </element>
+            <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+              <key type="Int">3</key>
+              <value type="String">three</value>
+            </element>
+          </map>
+        </value>
+      </child>
+      <map type="Map">
+        <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+          <key type="Int">1</key>
+          <value type="String">one</value>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+          <key type="Int">2</key>
+          <value type="String">two</value>
+        </element>
+        <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+          <key type="Int">3</key>
+          <value type="String">three</value>
+        </element>
+      </map>
+    </value>
+  </child>
+  <map type="Map">
+    <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+      <key type="Int">1</key>
+      <value type="String">one</value>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+      <key type="Int">2</key>
+      <value type="String">two</value>
+    </element>
+    <element type="Object" className="org.yankov.serialization.xml.XmlDataModel.MapElement">
+      <key type="Int">3</key>
+      <value type="String">three</value>
+    </element>
+  </map>
+</object>
