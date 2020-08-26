@@ -5,10 +5,12 @@ import org.scalatest.{Matchers, WordSpec}
 import scala.io.Source
 
 class XmlDeserializerTest extends WordSpec with Matchers {
-  //TODO test deserialization when json string field contains {}[],":
-  //TODO test field not found exception path
-//  "deserialize should succeed" in {
-//    val result = XmlDeserializer.fromJson[Entity](Source.fromResource("entity.xml").getLines.toList.head)
-//    result
-//  }
+  "deserialize should succeed" in {
+    val result = XmlDeserializer.deserialize(
+      Source.fromResource("entity.xml").getLines.toList.mkString,
+      Class.forName("org.yankov.serialization.xml.Entity")
+    )
+    result.isRight shouldBe true
+    result.getOrElse() shouldBe TestData.createEntity(0)
+  }
 }

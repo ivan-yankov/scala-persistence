@@ -23,7 +23,6 @@ object ReflectionUtils {
     val byte: Class[Byte] = classOf[Byte]
     val bytes: Class[Bytes] = classOf[Bytes]
     val string: Class[String] = classOf[String]
-    val seq: Class[Seq[_]] = classOf[Seq[_]]
     val list: Class[List[_]] = classOf[List[_]]
     val vector: Class[Vector[_]] = classOf[Vector[_]]
     val set: Class[Set[_]] = classOf[Set[_]]
@@ -31,7 +30,7 @@ object ReflectionUtils {
     val option: Class[Option[_]] = classOf[Option[_]]
 
     val asList: List[Class[_]] = List(
-      short, int, long, float, double, char, boolean, byte, string, seq, list, vector, set, map, option
+      short, int, long, float, double, char, boolean, byte, bytes, string, list, vector, set, map, option
     )
   }
 
@@ -45,8 +44,8 @@ object ReflectionUtils {
       case Classes.char => ' '
       case Classes.boolean => false
       case Classes.byte => 0.toByte
+      case Classes.bytes => Bytes(List())
       case Classes.string => ""
-      case Classes.seq => Seq()
       case Classes.list => List()
       case Classes.vector => Vector()
       case Classes.set => Set()

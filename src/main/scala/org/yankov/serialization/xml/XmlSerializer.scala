@@ -5,11 +5,21 @@ import java.util.Base64
 import org.yankov.datastructures.Tree
 import org.yankov.datastructures.TreeModel.Node
 import org.yankov.serialization.xml.XmlCommons._
-import org.yankov.serialization.xml.XmlDataModel._
+import org.yankov.serialization.xml.XmlDataModel.Bytes
 
 import scala.annotation.tailrec
 
 object XmlSerializer {
+  case class ObjectNode(name: String, value: Any)
+
+  case class XmlNode(name: String,
+                     typeName: String,
+                     className: Option[String],
+                     level: Int,
+                     value: String)
+
+  case class MapElement[K, V](key: K, value: V)
+
   private val numberOfDecimalPlaces = 16
   private val indentation = "  "
 
@@ -17,7 +27,6 @@ object XmlSerializer {
     node.value match {
       case _: Bytes => List()
       case _: Seq[_] => List()
-      case _: List[_] => List()
       case _: Set[_] => List()
       case product: Product =>
         Range(0, product.productIterator.size)
@@ -30,7 +39,7 @@ object XmlSerializer {
 
   implicit def aggregate(parent: XmlNode, children: List[XmlNode]): XmlNode = {
     val value = children.map(x => printXmlNode(x)).mkString("")
-    XmlNode(parent.name, parent.`type`, parent.className, parent.level, value)
+    XmlNode(parent.name, parent.typeName, parent.className, parent.level, value)
   }
 
   def serialize(product: Product): String = printXmlNode(serialize(product, 0)).trim
@@ -65,10 +74,10 @@ object XmlSerializer {
   }
 
   private def printXmlNode(xmlNode: XmlNode): String = {
-    val typeAttribute = " type=\"" + xmlNode.`type` + "\""
-    val classNameAttribute = if (xmlNode.className.isDefined) " className=\"" + xmlNode.className.get + "\"" else ""
+    val typeAttribute = " " + typeAttributeName + "=\"" + xmlNode.typeName + "\""
+    val classNameAttribute = if (xmlNode.className.isDefined) " " + classNameAttributeName + "=\"" + xmlNode.className.get + "\"" else ""
     val beforeCloseTag = {
-      if (baseTypes.contains(xmlNode.`type`)) ""
+      if (baseTypes.contains(xmlNode.typeName)) ""
       else "\n" + levelIndentation(xmlNode.level)
     }
 
@@ -91,7 +100,6 @@ object XmlSerializer {
     case _: Byte => Types.byte
     case _: Bytes => Types.bytes
     case _: String => Types.string
-    case _: Seq[_] => Types.seq
     case _: List[_] => Types.list
     case _: Vector[_] => Types.vector
     case _: Set[_] => Types.set
@@ -111,7 +119,6 @@ object XmlSerializer {
     case value: Byte => encodeBytes(Bytes(List(value.toByte)))
     case value: Bytes => encodeBytes(value)
     case value: String => value
-    case value: Seq[_] => collectionToString(value, level)
     case value: List[_] => collectionToString(value, level)
     case value: Vector[_] => collectionToString(value, level)
     case value: Set[_] => collectionToString(value.toList, level)

@@ -5,6 +5,9 @@ object XmlCommons {
   val closeTag: String = ">"
   val closeTagNamePrefix = "/"
 
+  val typeAttributeName: String = "type"
+  val classNameAttributeName: String = "className"
+
   object Types {
     val short: String = "Short"
     val int: String = "Int"
@@ -16,7 +19,6 @@ object XmlCommons {
     val byte: String = "Byte"
     val bytes: String = "Bytes"
     val string: String = "String"
-    val seq: String = "Seq"
     val list: String = "List"
     val vector: String = "Vector"
     val set: String = "Set"
@@ -36,18 +38,5 @@ object XmlCommons {
     Types.byte,
     Types.bytes,
     Types.string
-  )
-
-  val collectionTypes: List[String] = List(
-    Types.seq,
-    Types.list,
-    Types.vector,
-    Types.set
-  )
-
-  val complexTypes: List[String] = List(
-    Types.map,
-    Types.option,
-    Types.obj
   )
 }
