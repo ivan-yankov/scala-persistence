@@ -48,11 +48,9 @@ class XmlParserTest extends WordSpec with Matchers {
   }
 
   "get node value for object should succeed" in {
-    XmlParser.getNodeValue(objectNode) shouldBe List(
-      """<short type="Short">10</short>""",
-      """<int type="Int">20</int>""",
-      """<long type="Long">30</long>"""
-    ).mkString
+    XmlParser.getNodeValue(objectNode) shouldBe """<short type="Short">10</short>
+                                                  |  <int type="Int">20</int>
+                                                  |  <long type="Long">30</long>""".stripMargin
   }
 
   "get node value for empty list should succeed" in {
@@ -60,10 +58,8 @@ class XmlParserTest extends WordSpec with Matchers {
   }
 
   "get node value for non-empty list should succeed" in {
-    XmlParser.getNodeValue(nonEmptyListNode) shouldBe List(
-      """<element type="Int">1</element>""",
-      """<element type="Int">2</element>""",
-    ).mkString
+    XmlParser.getNodeValue(nonEmptyListNode) shouldBe """<element type="Int">1</element>
+                                                        |  <element type="Int">2</element>""".stripMargin
   }
 
   "get node value for string with special characters should succeed" in {
@@ -71,16 +67,14 @@ class XmlParserTest extends WordSpec with Matchers {
   }
 
   "get node value for list of lists should succeed" in {
-    XmlParser.getNodeValue(listOfListNode) shouldBe List(
-      """<element type="List">""",
-      """<element type="Int">1</element>""",
-      """<element type="Int">2</element>""",
-      """</element>""",
-      """<element type="List">""",
-      """<element type="Int">3</element>""",
-      """<element type="Int">4</element>""",
-      """</element>"""
-    ).mkString
+    XmlParser.getNodeValue(listOfListNode) shouldBe """<element type="List">
+                                                      |    <element type="Int">1</element>
+                                                      |    <element type="Int">2</element>
+                                                      |  </element>
+                                                      |  <element type="List">
+                                                      |    <element type="Int">3</element>
+                                                      |    <element type="Int">4</element>
+                                                      |  </element>""".stripMargin
   }
 
   "get node children for object should succeed" in {
@@ -104,8 +98,14 @@ class XmlParserTest extends WordSpec with Matchers {
 
   "get node children for list of lists should succeed" in {
     XmlParser.getNodeChildren(listOfListNode) shouldBe List(
-      """<element type="List"><element type="Int">1</element><element type="Int">2</element></element>""",
-      """<element type="List"><element type="Int">3</element><element type="Int">4</element></element>"""
+      """<element type="List">
+        |    <element type="Int">1</element>
+        |    <element type="Int">2</element>
+        |  </element>""".stripMargin,
+        """<element type="List">
+        |    <element type="Int">3</element>
+        |    <element type="Int">4</element>
+        |  </element>""".stripMargin
     )
   }
 }

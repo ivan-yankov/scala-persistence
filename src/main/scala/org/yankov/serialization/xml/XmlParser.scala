@@ -43,7 +43,11 @@ object XmlParser {
       else {
         val index = s.indexOf(closeTag, closeTagIndex(s, getTagName(s))) + 1
         val split = splitAt(s, index)
-        iterate(split._2.trim, acc.appended(split._1))
+        val child = {
+          if (getAttributes(split._1).getOrElse(typeAttributeName, "").equals(Types.string)) split._1
+          else split._1.trim
+        }
+        iterate(split._2.trim, acc.appended(child))
       }
     }
     val nodeValue = getNodeValue(node)
@@ -57,7 +61,7 @@ object XmlParser {
     val value = node.substring(startIndex, endIndex)
     val t = getAttributes(node).getOrElse(typeAttributeName, "")
     if (t.equals(Types.string)) value
-    else removeIndentation(value)
+    else value.trim
   }
 
   private def splitAt(s: String, index: Int): (String, String) = {
@@ -90,26 +94,6 @@ object XmlParser {
 
     val initialIndex = s.indexOf(createCloseTag(tagName))
     iterate(initialIndex)
-  }
-
-  private def removeIndentation(s: String): String = {
-    def notInTag(index: Int): Boolean = {
-      val str = s.substring(0, index)
-      val openTagCount = str.count(x => x.toString.equals(openTag))
-      val closeTagCount = str.count(x => x.toString.equals(closeTag))
-      openTagCount == closeTagCount
-    }
-
-    Range(0, s.length)
-      .toList
-      .zip(s)
-      .map(x => {
-        if (x._2.equals(' ')) if (notInTag(x._1)) '\n' else x._2
-        else x._2
-      })
-      .mkString
-      .replace("\n", "")
-      .trim
   }
 
   private def createCloseTag(tagName: String): String = s"$openTag$closeTagNamePrefix$tagName$closeTag"

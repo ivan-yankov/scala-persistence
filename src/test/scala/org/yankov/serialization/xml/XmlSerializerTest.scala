@@ -6,19 +6,19 @@ import org.yankov.serialization.xml.XmlDataModel.Bytes
 import scala.io.Source
 
 class XmlSerializerTest extends WordSpec with Matchers {
-  "json serialization should succeed" in {
+  "serialize should succeed" in {
     val entity = TestData.createEntity(0)
     val result = XmlSerializer.serialize(entity)
     result shouldBe Source.fromResource("entity.xml").getLines.toList.mkString("\n")
   }
 
-  "json serialization with recursion should succeed" in {
+  "serialize with recursion should succeed" in {
     val entity = TestData.createEntity(5)
     val result = XmlSerializer.serialize(entity)
     result shouldBe Source.fromResource("entity-recursion.xml").getLines.toList.mkString("\n")
   }
 
-  "json serialization with deep recursion should not throw StackOverflowException" in {
+  "serialize with deep recursion should not throw StackOverflowException" in {
     val entity = TestData.createEntity(200)
     XmlSerializer.serialize(entity)
   }

@@ -13,4 +13,13 @@ class XmlDeserializerTest extends WordSpec with Matchers {
     result.isRight shouldBe true
     result.getOrElse() shouldBe TestData.createEntity(0)
   }
+
+  "deserialize with recursion should succeed" in {
+    val result = XmlDeserializer.deserialize(
+      Source.fromResource("entity-recursion.xml").getLines.toList.mkString,
+      Class.forName("org.yankov.serialization.xml.Entity")
+    )
+    result.isRight shouldBe true
+    result.getOrElse() shouldBe TestData.createEntity(5)
+  }
 }
