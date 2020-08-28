@@ -1,4 +1,4 @@
-name := "scala-serialization"
+name := "scala-persistence"
 
 version := "0.1"
 
