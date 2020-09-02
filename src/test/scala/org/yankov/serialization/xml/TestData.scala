@@ -45,12 +45,20 @@ object TestData {
     string = "serialization test",
     emptyList = List(),
     valuesList = List.tabulate(5)(x => x + 1),
-    objectList = List(Dependency("1", "d1"), Dependency("2", "d2"), Dependency("3", "d3")),
+    objectList = List(
+      Dependency("object-list-id-1", "object-list-description-1"),
+      Dependency("object-list-id-2", "object-list-description-2"),
+      Dependency("object-list-id-3", "object-list-description-3")
+    ),
     arrayList = List.tabulate(5)(x => List.tabulate(3)(y => Math.pow(x, y))),
     valuesVector = Vector.tabulate(5)(x => x + 1),
-    objectVector = Vector(Dependency("1", "d1"), Dependency("2", "d2"), Dependency("3", "d3")),
+    objectVector = Vector(
+      Dependency("object-vector-id-1", "object-vector-description-1"),
+      Dependency("object-vector-id-2", "object-vector-description-2"),
+      Dependency("object-vector-id-3", "object-vector-description-3")
+    ),
     arrayVector = Vector.tabulate(5)(x => Vector.tabulate(3)(y => Math.pow(x, y))),
-    pair = Pair(1, Dependency("id", "description")),
+    pair = Pair(1, Dependency("pair-dependency-id", "pair-dependency-description")),
     option1 = Option("present"),
     option2 = Option.empty,
     child = if (numberOfChildren == 0) Option.empty else Option(createEntity(numberOfChildren - 1)),

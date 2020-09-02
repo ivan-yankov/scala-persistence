@@ -10,13 +10,14 @@ import org.yankov.serialization.xml.XmlDataModel.Bytes
 import scala.annotation.tailrec
 
 object XmlSerializer {
+
   case class ObjectNode(name: String, value: Any)
 
-  case class XmlNode(name: String,
-                     typeName: String,
-                     className: Option[String],
-                     level: Int,
-                     value: String)
+  case class XmlSerializeNode(name: String,
+                              typeName: String,
+                              className: Option[String],
+                              level: Int,
+                              value: String)
 
   case class MapElement[K, V](key: K, value: V)
 
@@ -37,14 +38,14 @@ object XmlSerializer {
     }
   }
 
-  implicit def aggregate(parent: XmlNode, children: List[XmlNode]): XmlNode = {
+  implicit def aggregate(parent: XmlSerializeNode, children: List[XmlSerializeNode]): XmlSerializeNode = {
     val value = children.map(x => printXmlNode(x)).mkString("")
-    XmlNode(parent.name, parent.typeName, parent.className, parent.level, value)
+    XmlSerializeNode(parent.name, parent.typeName, parent.className, parent.level, value)
   }
 
   def serialize(product: Product): String = printXmlNode(serialize(product, 0)).trim
 
-  private def serialize(product: Product, initialLevel: Int): XmlNode = {
+  private def serialize(product: Product, initialLevel: Int): XmlSerializeNode = {
     Tree(ObjectNode("object", product))
       .flat()
       .map(x =>
@@ -52,7 +53,7 @@ object XmlSerializer {
           x.level + initialLevel,
           x.index,
           x.parentIndex,
-          XmlNode(
+          XmlSerializeNode(
             x.data.name,
             getType(x.data.value),
             getClassName(x.data.value),
@@ -70,10 +71,11 @@ object XmlSerializer {
     def iterate(level: Int, acc: String): String = {
       if (level == 0) acc else iterate(level - 1, acc + indentation)
     }
+
     iterate(level, "")
   }
 
-  private def printXmlNode(xmlNode: XmlNode): String = {
+  private def printXmlNode(xmlNode: XmlSerializeNode): String = {
     val typeAttribute = " " + typeAttributeName + "=\"" + xmlNode.typeName + "\""
     val classNameAttribute = if (xmlNode.className.isDefined) " " + classNameAttributeName + "=\"" + xmlNode.className.get + "\"" else ""
     val beforeCloseTag = {
@@ -130,11 +132,11 @@ object XmlSerializer {
     if (items.isEmpty) ""
     else {
       items.map {
-        case x: Product => XmlNode("element", getType(x), getClassName(x), level + 1, serialize(x, level + 1).value)
-        case x: Any => XmlNode("element", getType(x), getClassName(x), level + 1, printValue(x, level))
+        case x: Product => XmlSerializeNode("element", getType(x), getClassName(x), level + 1, serialize(x, level + 1).value)
+        case x: Any => XmlSerializeNode("element", getType(x), getClassName(x), level + 1, printValue(x, level))
       }
-      .map(x => printXmlNode(x))
-      .mkString("")
+        .map(x => printXmlNode(x))
+        .mkString("")
     }
   }
 

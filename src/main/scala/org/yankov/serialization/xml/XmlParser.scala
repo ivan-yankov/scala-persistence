@@ -1,100 +1,103 @@
 package org.yankov.serialization.xml
 
-import org.yankov.serialization.xml.XmlCommons.{Types, closeTag, closeTagNamePrefix, openTag, typeAttributeName}
-
-import scala.annotation.tailrec
+import org.yankov.serialization.xml.XmlCommons._
+import org.yankov.serialization.xml.XmlDataModel.{XmlNode, XmlParseException}
 
 object XmlParser {
-  def getTagName(node: String): String = {
-    val tagInfo = getTagInfo(node)
-    tagInfo.substring(0, tagInfo.indexOf(" "))
+  trait ParseState
+
+  case object InitialState extends ParseState
+
+  case object EndState extends ParseState
+
+  case object ReadTagName extends ParseState
+
+  case object ReadCloseTag extends ParseState
+
+  case object ReadAttributeKey extends ParseState
+
+  case object ReadAttributeValue extends ParseState
+
+  case object ReadTagValue extends ParseState
+
+  case class ParseResult(node: XmlNode, acc: String, state: ParseState)
+
+  def parse(xml: String): XmlNode = doParse(xml).head
+
+  def getNodeChildren(node: XmlNode): List[XmlNode] = {
+    val r = doParse(node.value.trim)
+    r
   }
 
-  def getAttributes(node: String): Map[String, String] = {
-    @tailrec
-    def iterate(s: String, acc: Map[String, String]): Map[String, String] = {
-      if (s.isEmpty) acc
-      else {
-        val splitIndex = s.indexOf("=")
-        val split = splitAt(s, splitIndex)
-        val name = split._1
-        val firstQuotesIndex = split._2.indexOf("\"")
-        val secondQuotesIndex = split._2.indexOf("\"", firstQuotesIndex + 1)
-        val value = split._2.substring(firstQuotesIndex + 1, secondQuotesIndex)
-        val newString = split._2.substring(secondQuotesIndex + 1).trim
-        val newAcc = acc + (name -> value)
-        iterate(newString, newAcc)
-      }
-    }
-
-    val tagInfo = getTagInfo(node)
-    val index = tagInfo.indexOf(" ")
-    if (index < 0) Map()
-    else {
-      val attributes = tagInfo.substring(index + 1, tagInfo.length)
-      iterate(attributes, Map())
-    }
-  }
-
-  def getNodeChildren(node: String): List[String] = {
-    @tailrec
-    def iterate(s: String, acc: List[String]): List[String] = {
-      if (s.isEmpty) acc
-      else {
-        val index = s.indexOf(closeTag, closeTagIndex(s, getTagName(s))) + 1
-        val split = splitAt(s, index)
-        val child = {
-          if (getAttributes(split._1).getOrElse(typeAttributeName, "").equals(Types.string)) split._1
-          else split._1.trim
+  private def doParse(xml: String): List[XmlNode] = {
+    case class Result(parseResult: ParseResult, nodeAcc: List[XmlNode])
+    val init = Result(ParseResult(XmlNode("", Map(), ""), "", InitialState), List())
+    xml
+      .trim
+      .foldLeft(init)((result, char) => {
+        val parseResult = process(result.parseResult, char)
+        parseResult.state match {
+          case EndState =>
+            Result(ParseResult(XmlNode("", Map(), ""), "", InitialState), result.nodeAcc.appended(parseResult.node))
+          case _ =>
+            Result(parseResult, result.nodeAcc)
         }
-        iterate(split._2.trim, acc.appended(child))
-      }
-    }
-    val nodeValue = getNodeValue(node)
-    iterate(nodeValue, List())
+      })
+      .nodeAcc
   }
 
-  def getNodeValue(node: String): String = {
-    val startIndex = node.indexOf(closeTag) + 1
-    val tagName = getTagName(node)
-    val endIndex = closeTagIndex(node, tagName)
-    val value = node.substring(startIndex, endIndex)
-    val t = getAttributes(node).getOrElse(typeAttributeName, "")
-    if (t.equals(Types.string)) value
-    else value.trim
-  }
-
-  private def splitAt(s: String, index: Int): (String, String) = {
-    if (index >= (s.length - 1)) (s, "")
-    else (s.substring(0, index), s.substring(index, s.length))
-  }
-
-  private def getTagInfo(node: String): String = node.substring(openTag.length, node.indexOf(closeTag))
-
-  private def closeTagIndex(s: String, tagName: String): Int = {
-    @tailrec
-    def countSubstringMatch(s: String, sub: String, acc: Int): Int = {
-      if (s.isEmpty) acc
-      else {
-        val newAcc = if (s.startsWith(sub)) acc + 1 else acc
-        countSubstringMatch(s.substring(1), sub, newAcc)
-      }
+  private def process(parseResult: ParseResult, char: Char): ParseResult = {
+    def parseAttribute(s: String): (String, String) = {
+      val pair = s.replace("\"", "").trim.split(attributeKeyValueSeparator)
+      (pair(0), pair(1))
     }
 
-    @tailrec
-    def iterate(index: Int): Int = {
-      val numberOfOpenTags = countSubstringMatch(s.substring(0, index), s"$openTag$tagName ", 0)
-      val numberOfCloseTags = countSubstringMatch(s.substring(0, index), createCloseTag(tagName), 0)
-      if (numberOfOpenTags - numberOfCloseTags == 1) index
-      else {
-        val newIndex = s.indexOf(createCloseTag(tagName), index + 1)
-        iterate(newIndex)
-      }
+    def openTagExists(s: String, tag: String): Boolean = {
+      val open = openTag + tag
+      val close = openTag + closeTagNamePrefix + tag
+      val openCount = s.toSeq.sliding(open.length).count(x => x.toString.equals(open))
+      val closeCount = s.toSeq.sliding(close.length).count(x => x.toString.equals(close))
+      openCount > closeCount
     }
 
-    val initialIndex = s.indexOf(createCloseTag(tagName))
-    iterate(initialIndex)
+    val node = parseResult.node
+    val acc = parseResult.acc
+    parseResult.state match {
+      case InitialState =>
+        if (char.toString.equals(openTag)) ParseResult(node, "", ReadTagName)
+        else ParseResult(node, "", InitialState)
+      case ReadTagName =>
+        if (char.equals(' ')) ParseResult(XmlNode(acc, node.attributes, node.value), "", ReadAttributeKey)
+        else ParseResult(node, acc + char.toString, ReadTagName)
+      case ReadCloseTag =>
+        if (char.toString.equals(closeTag)) {
+          if (node.tag.equals(acc) && !openTagExists(node.value, acc)) {
+            val value = if (isStringNode(node)) node.value else node.value.trim
+            ParseResult(XmlNode(node.tag, node.attributes, value), "", EndState)
+          }
+          else ParseResult(node, node.value + openTag + closeTagNamePrefix + acc + closeTag, ReadTagValue)
+        }
+        else ParseResult(node, acc + char.toString, ReadCloseTag)
+      case ReadAttributeKey =>
+        if (char.toString.equals(attributeKeyValueSeparator)) ParseResult(node, acc + char.toString, ReadAttributeValue)
+        else ParseResult(node, acc + char.toString, ReadAttributeKey)
+      case ReadAttributeValue =>
+        if (char.equals(' ') && acc.count(x => x.toString.equals(attributeValueWrapper)) == 2) {
+          val att = parseAttribute(acc)
+          ParseResult(XmlNode(node.tag, node.attributes + (att._1 -> att._2), node.value), "", ReadAttributeKey)
+        }
+        else if (char.toString.equals(closeTag)) {
+          val att = parseAttribute(acc)
+          ParseResult(XmlNode(node.tag, node.attributes + (att._1 -> att._2), node.value), "", ReadTagValue)
+        }
+        else ParseResult(node, acc + char.toString, ReadAttributeValue)
+      case ReadTagValue =>
+        if (char.toString.equals(closeTagNamePrefix) && acc.endsWith(openTag))
+          ParseResult(XmlNode(node.tag, node.attributes, acc.take(acc.length - 1)), "", ReadCloseTag)
+        else ParseResult(node, acc + char.toString, ReadTagValue)
+    }
   }
 
-  private def createCloseTag(tagName: String): String = s"$openTag$closeTagNamePrefix$tagName$closeTag"
+  private def isStringNode(node: XmlNode): Boolean =
+    node.attributes.getOrElse(typeAttributeName, "").equals(Types.string)
 }

@@ -21,16 +21,16 @@
   </valuesList>
   <objectList type="List">
     <element type="Object" className="org.yankov.serialization.xml.Dependency">
-      <id type="String">1</id>
-      <description type="String">d1</description>
+      <id type="String">object-list-id-1</id>
+      <description type="String">object-list-description-1</description>
     </element>
     <element type="Object" className="org.yankov.serialization.xml.Dependency">
-      <id type="String">2</id>
-      <description type="String">d2</description>
+      <id type="String">object-list-id-2</id>
+      <description type="String">object-list-description-2</description>
     </element>
     <element type="Object" className="org.yankov.serialization.xml.Dependency">
-      <id type="String">3</id>
-      <description type="String">d3</description>
+      <id type="String">object-list-id-3</id>
+      <description type="String">object-list-description-3</description>
     </element>
   </objectList>
   <arrayList type="List">
@@ -69,16 +69,16 @@
   </valuesVector>
   <objectVector type="Vector">
     <element type="Object" className="org.yankov.serialization.xml.Dependency">
-      <id type="String">1</id>
-      <description type="String">d1</description>
+      <id type="String">object-vector-id-1</id>
+      <description type="String">object-vector-description-1</description>
     </element>
     <element type="Object" className="org.yankov.serialization.xml.Dependency">
-      <id type="String">2</id>
-      <description type="String">d2</description>
+      <id type="String">object-vector-id-2</id>
+      <description type="String">object-vector-description-2</description>
     </element>
     <element type="Object" className="org.yankov.serialization.xml.Dependency">
-      <id type="String">3</id>
-      <description type="String">d3</description>
+      <id type="String">object-vector-id-3</id>
+      <description type="String">object-vector-description-3</description>
     </element>
   </objectVector>
   <arrayVector type="Vector">
@@ -111,8 +111,8 @@
   <pair type="Object" className="org.yankov.serialization.xml.Pair">
     <id type="Int">1</id>
     <dependency type="Object" className="org.yankov.serialization.xml.Dependency">
-      <id type="String">id</id>
-      <description type="String">description</description>
+      <id type="String">pair-dependency-id</id>
+      <description type="String">pair-dependency-description</description>
     </dependency>
   </pair>
   <option1 type="Option">

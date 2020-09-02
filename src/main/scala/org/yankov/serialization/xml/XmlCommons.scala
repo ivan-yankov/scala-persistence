@@ -3,7 +3,9 @@ package org.yankov.serialization.xml
 object XmlCommons {
   val openTag: String = "<"
   val closeTag: String = ">"
-  val closeTagNamePrefix = "/"
+  val closeTagNamePrefix: String = "/"
+  val attributeKeyValueSeparator: String = "="
+  val attributeValueWrapper: String = "\""
 
   val typeAttributeName: String = "type"
   val classNameAttributeName: String = "className"
