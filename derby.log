@@ -1,0 +1,39 @@
+----------------------------------------------------------------
+Tue Sep 15 17:29:13 EEST 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-0174-922b-6c93-00000d900c00 
+on database directory memory:/home/ivan-yankov/data/repos/scala-persistence/test-schema-table with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@3d4eac69 
+Loaded from file:/home/ivan-yankov/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/derby/derby/10.15.2.0/derby-10.15.2.0.jar
+java.vendor=Ubuntu
+java.runtime.version=11.0.8+10-post-Ubuntu-0ubuntu118.04.1
+user.dir=/home/ivan-yankov/data/repos/scala-persistence
+os.name=Linux
+os.arch=amd64
+os.version=5.4.0-42-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Sep 15 17:29:15 EEST 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance 6a6b410a-0174-922b-6c93-00000d900c00 
+on database directory memory:/home/ivan-yankov/data/repos/scala-persistence/test-add-column with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@3d4eac69 
+Loaded from file:/home/ivan-yankov/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/derby/derby/10.15.2.0/derby-10.15.2.0.jar
+java.vendor=Ubuntu
+java.runtime.version=11.0.8+10-post-Ubuntu-0ubuntu118.04.1
+user.dir=/home/ivan-yankov/data/repos/scala-persistence
+os.name=Linux
+os.arch=amd64
+os.version=5.4.0-42-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Sep 15 17:29:15 EEST 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance 6ac3c206-0174-922b-6c93-00000d900c00 
+on database directory memory:/home/ivan-yankov/data/repos/scala-persistence/test-drop-column with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@3d4eac69 
+Loaded from file:/home/ivan-yankov/.cache/coursier/v1/https/repo1.maven.org/maven2/org/apache/derby/derby/10.15.2.0/derby-10.15.2.0.jar
+java.vendor=Ubuntu
+java.runtime.version=11.0.8+10-post-Ubuntu-0ubuntu118.04.1
+user.dir=/home/ivan-yankov/data/repos/scala-persistence
+os.name=Linux
+os.arch=amd64
+os.version=5.4.0-42-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

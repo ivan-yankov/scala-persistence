@@ -5,59 +5,54 @@ import java.sql.{Connection, PreparedStatement, ResultSet, SQLException, Stateme
 import org.slf4j.LoggerFactory
 import org.yankov.persistence.sql.SqlModel._
 
-case class QueryBuilder(connection: Connection) {
+case class QueryExecutor(connection: Connection) {
   private val log = LoggerFactory.getLogger(getClass)
 
-  def createSchema(name: String): Boolean = {
+  def createSchema(name: String): Either[Throwable, Unit] = {
     try {
       connection.prepareStatement(s"CREATE SCHEMA $name").execute()
+      Right()
     } catch {
-      case e: SQLException =>
-        log.error("Unable to create schema", e)
-        false
+      case e: SQLException => Left(e)
     }
   }
 
-  def createTable(schemaName: String, tableName: String, columns: List[ColumnDefinition]): Boolean = {
+  def createTable(schemaName: String, tableName: String, columns: List[ColumnDefinition]): Either[Throwable, Unit] = {
     try {
       val fields = columns
         .map(x => columnToString(x))
         .mkString(", ")
       connection.prepareStatement(s"CREATE TABLE $schemaName.$tableName($fields)").execute()
+      Right()
     } catch {
-      case e: SQLException =>
-        log.error("Unable to create table", e)
-        false
+      case e: SQLException => Left(e)
     }
   }
 
-  def dropTable(schemaName: String, tableName: String): Boolean = {
+  def dropTable(schemaName: String, tableName: String): Either[Throwable, Unit] = {
     try {
       connection.prepareStatement(s"DROP TABLE $schemaName.$tableName").execute()
+      Right()
     } catch {
-      case e: SQLException =>
-        log.error("Unable to drop table", e)
-        false
+      case e: SQLException => Left(e)
     }
   }
 
-  def addColumn(schemaName: String, tableName: String, column: ColumnDefinition): Boolean = {
+  def addColumn(schemaName: String, tableName: String, column: ColumnDefinition): Either[Throwable, Unit] = {
     try {
       connection.prepareStatement(s"ALTER TABLE $schemaName.$tableName ADD ${columnToString(column)}").execute()
+      Right()
     } catch {
-      case e: SQLException =>
-        log.error("Unable to add column", e)
-        false
+      case e: SQLException => Left(e)
     }
   }
 
-  def dropColumn(schemaName: String, tableName: String, columnName: String): Boolean = {
+  def dropColumn(schemaName: String, tableName: String, columnName: String): Either[Throwable, Unit] = {
     try {
       connection.prepareStatement(s"ALTER TABLE $schemaName.$tableName DROP $columnName").execute()
+      Right()
     } catch {
-      case e: SQLException =>
-        log.error("Unable to drop column", e)
-        false
+      case e: SQLException => Left(e)
     }
   }
 

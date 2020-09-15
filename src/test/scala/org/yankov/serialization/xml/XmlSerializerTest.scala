@@ -1,7 +1,6 @@
 package org.yankov.serialization.xml
 
-import org.scalatest.{Ignore, Matchers, WordSpec}
-import org.yankov.serialization.xml.XmlDataModel.Bytes
+import org.scalatest.{Matchers, WordSpec}
 
 import scala.io.Source
 
