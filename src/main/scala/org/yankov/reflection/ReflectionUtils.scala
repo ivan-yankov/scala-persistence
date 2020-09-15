@@ -1,6 +1,6 @@
 package org.yankov.reflection
 
-import org.yankov.serialization.xml.XmlDataModel.Bytes
+import org.yankov.datastructures.Types.Bytes
 
 case class Field(name: String, cls: Class[_])
 

@@ -5,6 +5,7 @@ import java.util.Base64
 import org.slf4j.LoggerFactory
 import org.yankov.datastructures.Tree
 import org.yankov.datastructures.TreeModel._
+import org.yankov.datastructures.Types.Bytes
 import org.yankov.reflection.{Field, ReflectionUtils}
 import org.yankov.serialization.xml.XmlCommons._
 import org.yankov.serialization.xml.XmlDataModel._

@@ -4,8 +4,8 @@ import java.util.Base64
 
 import org.yankov.datastructures.Tree
 import org.yankov.datastructures.TreeModel.Node
+import org.yankov.datastructures.Types.Bytes
 import org.yankov.serialization.xml.XmlCommons._
-import org.yankov.serialization.xml.XmlDataModel.Bytes
 
 import scala.annotation.tailrec
 

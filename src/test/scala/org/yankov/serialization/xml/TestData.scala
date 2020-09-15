@@ -1,6 +1,6 @@
 package org.yankov.serialization.xml
 
-import org.yankov.serialization.xml.XmlDataModel.Bytes
+import org.yankov.datastructures.Types.Bytes
 
 case class Dependency(id: String, description: String)
 
