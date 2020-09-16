@@ -1,9 +1,9 @@
 package org.yankov.persistence.sql
 
-import java.sql.{Connection, DatabaseMetaData, Types}
+import java.sql.{Connection, Types}
 
 import org.scalatest.{Matchers, WordSpec}
-import org.yankov.persistence.sql.SqlModel.ColumnDefinition
+import org.yankov.persistence.sql.SqlModel._
 
 class QueryExecutorTest extends WordSpec with Matchers {
   private def createDatabase(name: String): Connection = {
@@ -22,8 +22,8 @@ class QueryExecutorTest extends WordSpec with Matchers {
     val schema = "SCM"
     val table = "TBL"
     val columns = List(
-      ColumnDefinition("ID", "INT", "NOT NULL"),
-      ColumnDefinition("VAL", "DOUBLE", "")
+      ColumnDefinition("ID", DerbySqlTypes.int, DerbySqlConstraints.notNull),
+      ColumnDefinition("VAL", DerbySqlTypes.double)
     )
 
     val createSchemaResult = executor.createSchema(schema)
@@ -55,14 +55,14 @@ class QueryExecutorTest extends WordSpec with Matchers {
     val schema = "SCM"
     val table = "TBL"
     val columns = List(
-      ColumnDefinition("ID", "INT", "NOT NULL"),
-      ColumnDefinition("VAL", "DOUBLE", "")
+      ColumnDefinition("ID", DerbySqlTypes.int, DerbySqlConstraints.notNull),
+      ColumnDefinition("VAL", DerbySqlTypes.double)
     )
 
     executor.createSchema(schema)
     executor.createTable(schema, table, columns)
 
-    val tableColumns = executor.connection.getMetaData.getColumns(null, null, table, null)
+    val tableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     tableColumns.next() shouldBe true
     tableColumns.getString("COLUMN_NAME") shouldBe "ID"
     tableColumns.getInt("DATA_TYPE") shouldBe Types.INTEGER
@@ -71,9 +71,9 @@ class QueryExecutorTest extends WordSpec with Matchers {
     tableColumns.getInt("DATA_TYPE") shouldBe Types.DOUBLE
     tableColumns.next() shouldBe false
 
-    executor.addColumn(schema, table, ColumnDefinition("ADDED_COLUMN", "VARCHAR(256)", ""))
+    executor.addColumn(schema, table, ColumnDefinition("ADDED_COLUMN", DerbySqlTypes.varchar(256)))
 
-    val newTableColumns = executor.connection.getMetaData.getColumns(null, null, table, null)
+    val newTableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     newTableColumns.next() shouldBe true
     newTableColumns.getString("COLUMN_NAME") shouldBe "ID"
     newTableColumns.getInt("DATA_TYPE") shouldBe Types.INTEGER
@@ -94,14 +94,14 @@ class QueryExecutorTest extends WordSpec with Matchers {
     val schema = "SCM"
     val table = "TBL"
     val columns = List(
-      ColumnDefinition("ID", "INT", "NOT NULL"),
-      ColumnDefinition("VAL", "DOUBLE", "")
+      ColumnDefinition("ID", DerbySqlTypes.int, DerbySqlConstraints.notNull),
+      ColumnDefinition("VAL", DerbySqlTypes.double)
     )
 
     executor.createSchema(schema)
     executor.createTable(schema, table, columns)
 
-    val tableColumns = executor.connection.getMetaData.getColumns(null, null, table, null)
+    val tableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     tableColumns.next() shouldBe true
     tableColumns.getString("COLUMN_NAME") shouldBe "ID"
     tableColumns.getInt("DATA_TYPE") shouldBe Types.INTEGER
@@ -112,7 +112,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
 
     executor.dropColumn(schema, table, "VAL")
 
-    val newTableColumns = executor.connection.getMetaData.getColumns(null, null, table, null)
+    val newTableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     newTableColumns.next() shouldBe true
     newTableColumns.getString("COLUMN_NAME") shouldBe "ID"
     newTableColumns.getInt("DATA_TYPE") shouldBe Types.INTEGER

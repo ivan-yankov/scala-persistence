@@ -3,7 +3,29 @@ package org.yankov.persistence.sql
 import org.yankov.datastructures.Types.Bytes
 
 object SqlModel {
-  case class ColumnDefinition(name: String, sqlType: String, constraint: String)
+  object DerbySqlTypes {
+    val short: String = "INTEGER"
+    val int: String = "INTEGER"
+    val long: String = "BIGINT"
+    val float: String = "DOUBLE"
+    val double: String = "DOUBLE"
+    val boolean: String = "BOOLEAN"
+    val byte: String = "TINYINT"
+    val bytes: String = "BLOB"
+    val string: String = "CLOB"
+
+    def varchar(size: Int): String = s"VARCHAR($size)"
+  }
+
+  object DerbySqlConstraints {
+    val notNull: String = "NOT NULL"
+    val primaryKey: String = "PRIMARY KEY"
+    val unique: String = "UNIQUE"
+    val foreignKey: String = "FOREIGN KEY"
+    val check: String = "CHECK"
+  }
+
+  case class ColumnDefinition(name: String, sqlType: String, constraint: String = "")
 
   trait Clause {
     def name: String
@@ -33,8 +55,6 @@ object SqlModel {
   case class FloatSqlValue(value: Float) extends SqlValue
 
   case class DoubleSqlValue(value: Double) extends SqlValue
-
-  case class CharSqlValue(value: Char) extends SqlValue
 
   case class BooleanSqlValue(value: Boolean) extends SqlValue
 

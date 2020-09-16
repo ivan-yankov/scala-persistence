@@ -1,12 +1,15 @@
 package org.yankov.persistence.sql
 
-import java.sql.{Connection, PreparedStatement, ResultSet, SQLException, Statement}
+import java.sql._
 
-import org.slf4j.LoggerFactory
+import org.yankov.datastructures.Types.Bytes
 import org.yankov.persistence.sql.SqlModel._
 
+import scala.annotation.tailrec
+
 case class QueryExecutor(connection: Connection) {
-  private val log = LoggerFactory.getLogger(getClass)
+  private val columnName = "COLUMN_NAME"
+  private val dataType = "DATA_TYPE"
 
   def createSchema(name: String): Either[Throwable, Unit] = {
     try {
@@ -56,7 +59,7 @@ case class QueryExecutor(connection: Connection) {
     }
   }
 
-  def insert(schemaName: String, tableName: String, columns: List[String], data: List[List[SqlValue]]): Boolean = {
+  def insert(schemaName: String, tableName: String, columns: List[String], data: List[List[SqlValue]]): Either[Throwable, Unit] = {
     try {
       val s = connection.prepareStatement(insertQuery(schemaName, tableName, columns))
 
@@ -66,15 +69,15 @@ case class QueryExecutor(connection: Connection) {
       })
 
       val result = s.executeBatch()
-      result.size == data.size && result.forall(x => x == 1 || x == Statement.SUCCESS_NO_INFO)
+      val ok = result.size == data.size && result.forall(x => x == 1 || x == Statement.SUCCESS_NO_INFO)
+      if (ok) Right()
+      else throw new SQLException("Insert was not successful.")
     } catch {
-      case e: SQLException =>
-        log.error("Unable to insert data", e)
-        false
+      case e: SQLException => Left(e)
     }
   }
 
-  def select(schemaName: String, tableName: String, columns: List[String] = List(), criteria: List[Clause] = List()): Option[ResultSet] = {
+  def select(schemaName: String, tableName: String, columns: List[String] = List(), criteria: List[Clause] = List()): Either[Throwable, List[List[SqlValue]]] = {
     try {
       val s = connection.prepareStatement(selectQuery(schemaName, tableName, columns, criteria))
 
@@ -84,11 +87,21 @@ case class QueryExecutor(connection: Connection) {
         .zip(criteria)
         .foreach(x => setStatementValue(s, x._1, x._2.value))
 
-      Option(s.executeQuery())
+      val result = s.executeQuery()
+
+      @tailrec
+      def iterate(acc: List[List[SqlValue]]): List[List[SqlValue]] = {
+        if (!result.next()) acc
+        else {
+          val row = getRow(result, schemaName, tableName, columns)
+          iterate(acc.appended(row))
+        }
+      }
+
+      val r = iterate(List())
+      Right(r)
     } catch {
-      case e: SQLException =>
-        log.error("Unable to select data", e)
-        Option.empty
+      case e: SQLException => Left(e)
     }
   }
 
@@ -99,17 +112,42 @@ case class QueryExecutor(connection: Connection) {
     s"INSERT INTO $schemaName.$tableName(${columns.mkString(",")}) VALUES($placeholders)"
   }
 
+  private def selectQuery(schemaName: String, tableName: String, columns: List[String], criteria: List[Clause]): String = {
+    val s = if (columns.nonEmpty) columns.mkString(",") else "*"
+    val c = if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?") else ""
+    s"SELECT $s FROM $schemaName.$tableName$c"
+  }
+
   private def setStatementValue(s: PreparedStatement, i: Int, x: SqlValue): Unit = x match {
     case ShortSqlValue(value) => s.setShort(i, value)
     case IntSqlValue(value) => s.setInt(i, value)
     case LongSqlValue(value) => s.setLong(i, value)
     case FloatSqlValue(value) => s.setFloat(i, value)
     case DoubleSqlValue(value) => s.setDouble(i, value)
-    case CharSqlValue(value) => s.setString(i, value.toString)
     case BooleanSqlValue(value) => s.setBoolean(i, value)
     case ByteSqlValue(value) => s.setByte(i, value)
     case BytesSqlValue(value) => s.setBytes(i, value.value.toArray)
     case StringSqlValue(value) => s.setString(i, value)
+  }
+
+  private def getResultValue(result: ResultSet, columnName: String, columnType: Int): SqlValue = columnType match {
+    case Types.SMALLINT => ShortSqlValue(result.getShort(columnName))
+    case Types.INTEGER => IntSqlValue(result.getInt(columnName))
+    case Types.BIGINT => LongSqlValue(result.getLong(columnName))
+    case Types.REAL => FloatSqlValue(result.getFloat(columnName))
+    case Types.FLOAT => DoubleSqlValue(result.getDouble(columnName))
+    case Types.DOUBLE => DoubleSqlValue(result.getDouble(columnName))
+    case Types.BIT => BooleanSqlValue(result.getBoolean(columnName))
+    case Types.BOOLEAN => BooleanSqlValue(result.getBoolean(columnName))
+    case Types.TINYINT => ByteSqlValue(result.getByte(columnName))
+    case Types.BINARY => BytesSqlValue(Bytes(result.getBytes(columnName).toList))
+    case Types.VARBINARY => BytesSqlValue(Bytes(result.getBytes(columnName).toList))
+    case Types.LONGVARBINARY => BytesSqlValue(Bytes(result.getBytes(columnName).toList))
+    case Types.BLOB => BytesSqlValue(Bytes(result.getBytes(columnName).toList))
+    case Types.CHAR => StringSqlValue(result.getString(columnName))
+    case Types.VARCHAR => StringSqlValue(result.getString(columnName))
+    case Types.LONGVARCHAR => StringSqlValue(result.getString(columnName))
+    case Types.CLOB => StringSqlValue(result.getString(columnName))
   }
 
   private def addRow(s: PreparedStatement, values: List[SqlValue]): Unit = {
@@ -120,9 +158,12 @@ case class QueryExecutor(connection: Connection) {
       .foreach(x => setStatementValue(s, x._1, x._2))
   }
 
-  private def selectQuery(schemaName: String, tableName: String, columns: List[String], criteria: List[Clause]): String = {
-    val s = if (columns.nonEmpty) columns.mkString(",") else "*"
-    val c = if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?") else ""
-    s"SELECT $s FROM $schemaName.$tableName$c"
+  private def getRow(result: ResultSet, schemaName: String, tableName: String, columnNames: List[String]): List[SqlValue] = {
+    columnNames
+      .map(x => {
+        val r = connection.getMetaData.getColumns(null, schemaName, tableName, x)
+        r.next()
+        getResultValue(result, r.getString(columnName), r.getInt(dataType))
+      })
   }
 }
