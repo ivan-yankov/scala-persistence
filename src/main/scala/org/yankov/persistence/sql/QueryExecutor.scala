@@ -111,6 +111,17 @@ case class QueryExecutor(connection: Connection) {
     }
   }
 
+  def delete(schemaName: String, tableName: String, criteria: List[Clause]): Either[Throwable, Unit] = {
+    try {
+      val s = connection.prepareStatement(s"DELETE FROM $schemaName.$tableName${criteriaQuery(criteria)}")
+      setStatementParameters(criteria.map(x => x.value), s, 1)
+      s.execute()
+      Right()
+    } catch {
+      case e: SQLException => Left(e)
+    }
+  }
+
   private def columnToString(column: ColumnDefinition): String = s"${column.name} ${column.sqlType} ${column.constraint}"
 
   private def insertQuery(schemaName: String, tableName: String, columns: List[String]): String = {
@@ -120,13 +131,16 @@ case class QueryExecutor(connection: Connection) {
 
   private def selectQuery(schemaName: String, tableName: String, columns: List[String], criteria: List[Clause]): String = {
     val s = if (columns.nonEmpty) columns.mkString(",") else "*"
-    s"SELECT $s FROM $schemaName.$tableName${buildCriteria(criteria)}"
+    s"SELECT $s FROM $schemaName.$tableName${criteriaQuery(criteria)}"
   }
 
   private def updateQuery(schemaName: String, tableName: String, columns: List[String], criteria: List[Clause]): String = {
     val values = columns.map(x => s"$x=?").mkString(",")
-    s"UPDATE $schemaName.$tableName SET $values${buildCriteria(criteria)}"
+    s"UPDATE $schemaName.$tableName SET $values${criteriaQuery(criteria)}"
   }
+
+  private def criteriaQuery(criteria: List[Clause]): String =
+    if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?").mkString else ""
 
   private def setStatementValue(s: PreparedStatement, i: Int, x: SqlValue): Unit = x match {
     case IntSqlValue(value) => s.setInt(i, value)
@@ -189,7 +203,4 @@ case class QueryExecutor(connection: Connection) {
       .zip(parameters)
       .foreach(x => setStatementValue(statement, x._1, x._2))
   }
-
-  private def buildCriteria(criteria: List[Clause]): String =
-    if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?").mkString else ""
 }
