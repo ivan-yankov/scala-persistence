@@ -144,7 +144,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(true),
         BytesSqlValue(Bytes(List(1, 2, 3).map(x => x.toByte))),
         StringSqlValue("string 1"),
-        StringSqlValue("string 11"),
+        StringSqlValue("string 11")
       ),
         List(
         IntSqlValue(2),
@@ -153,7 +153,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(false),
         BytesSqlValue(Bytes(List(4, 5, 6).map(x => x.toByte))),
         StringSqlValue("string 2"),
-        StringSqlValue("string 22"),
+        StringSqlValue("string 22")
       ),
         List(
         IntSqlValue(3),
@@ -162,7 +162,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(false),
         BytesSqlValue(Bytes(List(7, 8, 9).map(x => x.toByte))),
         StringSqlValue("string 3"),
-        StringSqlValue("string 33"),
+        StringSqlValue("string 33")
       )
     )
 
@@ -199,7 +199,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(true),
         BytesSqlValue(Bytes(List(1, 2, 3).map(x => x.toByte))),
         StringSqlValue("string 1"),
-        StringSqlValue("string 11"),
+        StringSqlValue("string 11")
       ),
       List(
         IntSqlValue(2),
@@ -208,7 +208,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(false),
         BytesSqlValue(Bytes(List(4, 5, 6).map(x => x.toByte))),
         StringSqlValue("string 2"),
-        StringSqlValue("string 22"),
+        StringSqlValue("string 22")
       ),
       List(
         IntSqlValue(3),
@@ -217,7 +217,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(false),
         BytesSqlValue(Bytes(List(7, 8, 9).map(x => x.toByte))),
         StringSqlValue("string 3"),
-        StringSqlValue("string 33"),
+        StringSqlValue("string 33")
       )
     )
 
@@ -262,7 +262,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(true),
         BytesSqlValue(Bytes(List(1, 2, 3).map(x => x.toByte))),
         StringSqlValue("string 1"),
-        StringSqlValue("string 11"),
+        StringSqlValue("string 11")
       ),
       List(
         IntSqlValue(2),
@@ -271,7 +271,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(false),
         BytesSqlValue(Bytes(List(4, 5, 6).map(x => x.toByte))),
         StringSqlValue("string 2"),
-        StringSqlValue("string 22"),
+        StringSqlValue("string 22")
       ),
       List(
         IntSqlValue(3),
@@ -280,7 +280,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
         BooleanSqlValue(false),
         BytesSqlValue(Bytes(List(7, 8, 9).map(x => x.toByte))),
         StringSqlValue("string 3"),
-        StringSqlValue("string 33"),
+        StringSqlValue("string 33")
       )
     )
 
@@ -307,6 +307,77 @@ class QueryExecutorTest extends WordSpec with Matchers {
       columns = List("LONG_COL", "DOUBLE_COL"),
       criteria = List()
     )
+    result.isRight shouldBe true
+    result.getOrElse() shouldBe expectedData
+  }
+
+  "update should succeed" in {
+    val executor = QueryExecutor(createDatabase("test-update"))
+
+    val schema = "SCM"
+    val table = "TBL"
+    val columns = List(
+      ColumnDefinition("ID", DerbySqlTypes.int, DerbySqlConstraints.primaryKey),
+      ColumnDefinition("VAL1", DerbySqlTypes.string),
+      ColumnDefinition("VAL2", DerbySqlTypes.double)
+    )
+
+    executor.createSchema(schema).isRight shouldBe true
+    executor.createTable(schema, table, columns).isRight shouldBe true
+
+    val data = List(
+      List(
+        IntSqlValue(1),
+        StringSqlValue("string 1"),
+        DoubleSqlValue(1.0)
+      ),
+      List(
+        IntSqlValue(2),
+        StringSqlValue("string 2"),
+        DoubleSqlValue(2.0)
+      ),
+      List(
+        IntSqlValue(3),
+        StringSqlValue("string 3"),
+        DoubleSqlValue(3.0)
+      )
+    )
+
+    executor.insert(schema, table, columns.map(x => x.name), data).isRight shouldBe true
+
+    val expectedData = List(
+      List(
+        IntSqlValue(1),
+        StringSqlValue("string 11"),
+        DoubleSqlValue(1.0)
+      ),
+      List(
+        IntSqlValue(2),
+        StringSqlValue("string 2"),
+        DoubleSqlValue(2.0)
+      ),
+      List(
+        IntSqlValue(3),
+        StringSqlValue("string 33"),
+        DoubleSqlValue(3.0)
+      )
+    )
+
+    executor.update(
+      schema,
+      table,
+      Map("VAL1" -> StringSqlValue("string 11")),
+      List(WhereClause("ID", "=", IntSqlValue(1)))
+    )
+
+    executor.update(
+      schema,
+      table,
+      Map("VAL1" -> StringSqlValue("string 33")),
+      List(WhereClause("ID", "=", IntSqlValue(3)))
+    )
+
+    val result = executor.select(schema, table)
     result.isRight shouldBe true
     result.getOrElse() shouldBe expectedData
   }

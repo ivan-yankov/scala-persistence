@@ -80,14 +80,7 @@ case class QueryExecutor(connection: Connection) {
   def select(schemaName: String, tableName: String, columns: List[String] = List(), criteria: List[Clause] = List()): Either[Throwable, List[List[SqlValue]]] = {
     try {
       val s = connection.prepareStatement(selectQuery(schemaName, tableName, columns, criteria))
-
-      criteria
-        .indices
-        .toList
-        .map(x => x + 1)
-        .zip(criteria)
-        .foreach(x => setStatementValue(s, x._1, x._2.value))
-
+      setStatementParameters(criteria.map(x => x.value), s, 1)
       val result = s.executeQuery()
 
       @tailrec
@@ -106,6 +99,18 @@ case class QueryExecutor(connection: Connection) {
     }
   }
 
+  def update(schemaName: String, tableName: String, data: Map[String, SqlValue], criteria: List[Clause]): Either[Throwable, Unit] = {
+    try {
+      val s = connection.prepareStatement(updateQuery(schemaName, tableName, data.keys.toList, criteria))
+      setStatementParameters(data.values.toList, s, 1)
+      setStatementParameters(criteria.map(x => x.value), s, data.values.size + 1)
+      s.executeUpdate()
+      Right()
+    } catch {
+      case e: SQLException => Left(e)
+    }
+  }
+
   private def columnToString(column: ColumnDefinition): String = s"${column.name} ${column.sqlType} ${column.constraint}"
 
   private def insertQuery(schemaName: String, tableName: String, columns: List[String]): String = {
@@ -115,8 +120,12 @@ case class QueryExecutor(connection: Connection) {
 
   private def selectQuery(schemaName: String, tableName: String, columns: List[String], criteria: List[Clause]): String = {
     val s = if (columns.nonEmpty) columns.mkString(",") else "*"
-    val c = if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?").mkString else ""
-    s"SELECT $s FROM $schemaName.$tableName$c"
+    s"SELECT $s FROM $schemaName.$tableName${buildCriteria(criteria)}"
+  }
+
+  private def updateQuery(schemaName: String, tableName: String, columns: List[String], criteria: List[Clause]): String = {
+    val values = columns.map(x => s"$x=?").mkString(",")
+    s"UPDATE $schemaName.$tableName SET $values${buildCriteria(criteria)}"
   }
 
   private def setStatementValue(s: PreparedStatement, i: Int, x: SqlValue): Unit = x match {
@@ -171,4 +180,16 @@ case class QueryExecutor(connection: Connection) {
       .filter(x => selectColumns.contains(x._1))
       .map(x => getResultValue(result, x._1, x._2))
   }
+
+  private def setStatementParameters(parameters: List[SqlValue], statement: PreparedStatement, startIndex: Int): Unit = {
+    parameters
+      .indices
+      .toList
+      .map(x => x + startIndex)
+      .zip(parameters)
+      .foreach(x => setStatementValue(statement, x._1, x._2))
+  }
+
+  private def buildCriteria(criteria: List[Clause]): String =
+    if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?").mkString else ""
 }
