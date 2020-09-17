@@ -3,6 +3,7 @@ package org.yankov.persistence.sql
 import java.sql.{Connection, Types}
 
 import org.scalatest.{Matchers, WordSpec}
+import org.yankov.datastructures.Types.Bytes
 import org.yankov.persistence.sql.SqlModel._
 
 class QueryExecutorTest extends WordSpec with Matchers {
@@ -26,19 +27,15 @@ class QueryExecutorTest extends WordSpec with Matchers {
       ColumnDefinition("VAL", DerbySqlTypes.double)
     )
 
-    val createSchemaResult = executor.createSchema(schema)
-    createSchemaResult.isRight shouldBe true
-
-    val createTableResult = executor.createTable(schema, table, columns)
-    createTableResult.isRight shouldBe true
+    executor.createSchema(schema).isRight shouldBe true
+    executor.createTable(schema, table, columns).isRight shouldBe true
 
     val tables = executor.connection.getMetaData.getTables(null, schema, null, Array("TABLE"))
     tables.next() shouldBe true
     tables.getString("TABLE_SCHEM") shouldBe schema
     tables.getString("TABLE_NAME") shouldBe table
 
-    val dropTableResult = executor.dropTable(schema, table)
-    dropTableResult.isRight shouldBe true
+    executor.dropTable(schema, table).isRight shouldBe true
 
     executor
       .connection
@@ -59,8 +56,8 @@ class QueryExecutorTest extends WordSpec with Matchers {
       ColumnDefinition("VAL", DerbySqlTypes.double)
     )
 
-    executor.createSchema(schema)
-    executor.createTable(schema, table, columns)
+    executor.createSchema(schema).isRight shouldBe true
+    executor.createTable(schema, table, columns).isRight shouldBe true
 
     val tableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     tableColumns.next() shouldBe true
@@ -71,7 +68,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
     tableColumns.getInt("DATA_TYPE") shouldBe Types.DOUBLE
     tableColumns.next() shouldBe false
 
-    executor.addColumn(schema, table, ColumnDefinition("ADDED_COLUMN", DerbySqlTypes.varchar(256)))
+    executor.addColumn(schema, table, ColumnDefinition("ADDED_COLUMN", DerbySqlTypes.varchar(256))).isRight shouldBe true
 
     val newTableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     newTableColumns.next() shouldBe true
@@ -98,8 +95,8 @@ class QueryExecutorTest extends WordSpec with Matchers {
       ColumnDefinition("VAL", DerbySqlTypes.double)
     )
 
-    executor.createSchema(schema)
-    executor.createTable(schema, table, columns)
+    executor.createSchema(schema).isRight shouldBe true
+    executor.createTable(schema, table, columns).isRight shouldBe true
 
     val tableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     tableColumns.next() shouldBe true
@@ -110,7 +107,7 @@ class QueryExecutorTest extends WordSpec with Matchers {
     tableColumns.getInt("DATA_TYPE") shouldBe Types.DOUBLE
     tableColumns.next() shouldBe false
 
-    executor.dropColumn(schema, table, "VAL")
+    executor.dropColumn(schema, table, "VAL").isRight shouldBe true
 
     val newTableColumns = executor.connection.getMetaData.getColumns(null, schema, table, null)
     newTableColumns.next() shouldBe true
@@ -119,5 +116,198 @@ class QueryExecutorTest extends WordSpec with Matchers {
     newTableColumns.next() shouldBe false
 
     executor.connection.close()
+  }
+
+  "insert and select all rows, all columns should succeed" in {
+    val executor = QueryExecutor(createDatabase("test-insert-select-all-rows-all-columns"))
+
+    val schema = "SCM"
+    val table = "TBL"
+    val columns = List(
+      ColumnDefinition("ID", DerbySqlTypes.int, DerbySqlConstraints.primaryKey),
+      ColumnDefinition("LONG_COL", DerbySqlTypes.long),
+      ColumnDefinition("DOUBLE_COL", DerbySqlTypes.double),
+      ColumnDefinition("BOOLEAN_COL", DerbySqlTypes.boolean),
+      ColumnDefinition("BYTES_COL", DerbySqlTypes.bytes),
+      ColumnDefinition("STRING_COL", DerbySqlTypes.string),
+      ColumnDefinition("VARCHAR_COL", DerbySqlTypes.varchar(256)),
+    )
+
+    executor.createSchema(schema).isRight shouldBe true
+    executor.createTable(schema, table, columns).isRight shouldBe true
+
+    val data = List(
+      List(
+        IntSqlValue(1),
+        LongSqlValue(1),
+        DoubleSqlValue(1.0),
+        BooleanSqlValue(true),
+        BytesSqlValue(Bytes(List(1, 2, 3).map(x => x.toByte))),
+        StringSqlValue("string 1"),
+        StringSqlValue("string 11"),
+      ),
+        List(
+        IntSqlValue(2),
+        LongSqlValue(2),
+        DoubleSqlValue(2.0),
+        BooleanSqlValue(false),
+        BytesSqlValue(Bytes(List(4, 5, 6).map(x => x.toByte))),
+        StringSqlValue("string 2"),
+        StringSqlValue("string 22"),
+      ),
+        List(
+        IntSqlValue(3),
+        LongSqlValue(3),
+        DoubleSqlValue(3.0),
+        BooleanSqlValue(false),
+        BytesSqlValue(Bytes(List(7, 8, 9).map(x => x.toByte))),
+        StringSqlValue("string 3"),
+        StringSqlValue("string 33"),
+      )
+    )
+
+    executor.insert(schema, table, columns.map(x => x.name), data).isRight shouldBe true
+
+    val result = executor.select(schema, table)
+    result.isRight shouldBe true
+    result.getOrElse() shouldBe data
+  }
+
+  "insert and select some rows, all columns should succeed" in {
+    val executor = QueryExecutor(createDatabase("test-insert-select-some-rows-all-columns"))
+
+    val schema = "SCM"
+    val table = "TBL"
+    val columns = List(
+      ColumnDefinition("ID", DerbySqlTypes.int, DerbySqlConstraints.primaryKey),
+      ColumnDefinition("LONG_COL", DerbySqlTypes.long),
+      ColumnDefinition("DOUBLE_COL", DerbySqlTypes.double),
+      ColumnDefinition("BOOLEAN_COL", DerbySqlTypes.boolean),
+      ColumnDefinition("BYTES_COL", DerbySqlTypes.bytes),
+      ColumnDefinition("STRING_COL", DerbySqlTypes.string),
+      ColumnDefinition("VARCHAR_COL", DerbySqlTypes.varchar(256)),
+    )
+
+    executor.createSchema(schema).isRight shouldBe true
+    executor.createTable(schema, table, columns).isRight shouldBe true
+
+    val data = List(
+      List(
+        IntSqlValue(1),
+        LongSqlValue(1),
+        DoubleSqlValue(1.0),
+        BooleanSqlValue(true),
+        BytesSqlValue(Bytes(List(1, 2, 3).map(x => x.toByte))),
+        StringSqlValue("string 1"),
+        StringSqlValue("string 11"),
+      ),
+      List(
+        IntSqlValue(2),
+        LongSqlValue(2),
+        DoubleSqlValue(2.0),
+        BooleanSqlValue(false),
+        BytesSqlValue(Bytes(List(4, 5, 6).map(x => x.toByte))),
+        StringSqlValue("string 2"),
+        StringSqlValue("string 22"),
+      ),
+      List(
+        IntSqlValue(3),
+        LongSqlValue(3),
+        DoubleSqlValue(3.0),
+        BooleanSqlValue(false),
+        BytesSqlValue(Bytes(List(7, 8, 9).map(x => x.toByte))),
+        StringSqlValue("string 3"),
+        StringSqlValue("string 33"),
+      )
+    )
+
+    executor.insert(schema, table, columns.map(x => x.name), data).isRight shouldBe true
+
+    val result = executor.select(
+      schemaName = schema,
+      tableName = table,
+      columns = List(),
+      criteria = List(
+        WhereClause("ID", "=", IntSqlValue(1)),
+        OrClause("ID", "=", IntSqlValue(3))
+      )
+    )
+    result.isRight shouldBe true
+    result.getOrElse() shouldBe List(data.head, data.reverse.head)
+  }
+
+  "insert and select all rows, some columns should succeed" in {
+    val executor = QueryExecutor(createDatabase("test-insert-select-all-rows-some-columns"))
+
+    val schema = "SCM"
+    val table = "TBL"
+    val columns = List(
+      ColumnDefinition("ID", DerbySqlTypes.int, DerbySqlConstraints.primaryKey),
+      ColumnDefinition("LONG_COL", DerbySqlTypes.long),
+      ColumnDefinition("DOUBLE_COL", DerbySqlTypes.double),
+      ColumnDefinition("BOOLEAN_COL", DerbySqlTypes.boolean),
+      ColumnDefinition("BYTES_COL", DerbySqlTypes.bytes),
+      ColumnDefinition("STRING_COL", DerbySqlTypes.string),
+      ColumnDefinition("VARCHAR_COL", DerbySqlTypes.varchar(256)),
+    )
+
+    executor.createSchema(schema).isRight shouldBe true
+    executor.createTable(schema, table, columns).isRight shouldBe true
+
+    val data = List(
+      List(
+        IntSqlValue(1),
+        LongSqlValue(1),
+        DoubleSqlValue(1.0),
+        BooleanSqlValue(true),
+        BytesSqlValue(Bytes(List(1, 2, 3).map(x => x.toByte))),
+        StringSqlValue("string 1"),
+        StringSqlValue("string 11"),
+      ),
+      List(
+        IntSqlValue(2),
+        LongSqlValue(2),
+        DoubleSqlValue(2.0),
+        BooleanSqlValue(false),
+        BytesSqlValue(Bytes(List(4, 5, 6).map(x => x.toByte))),
+        StringSqlValue("string 2"),
+        StringSqlValue("string 22"),
+      ),
+      List(
+        IntSqlValue(3),
+        LongSqlValue(3),
+        DoubleSqlValue(3.0),
+        BooleanSqlValue(false),
+        BytesSqlValue(Bytes(List(7, 8, 9).map(x => x.toByte))),
+        StringSqlValue("string 3"),
+        StringSqlValue("string 33"),
+      )
+    )
+
+    executor.insert(schema, table, columns.map(x => x.name), data).isRight shouldBe true
+
+    val expectedData = List(
+      List(
+        LongSqlValue(1),
+        DoubleSqlValue(1.0)
+      ),
+      List(
+        LongSqlValue(2),
+        DoubleSqlValue(2.0)
+      ),
+      List(
+        LongSqlValue(3),
+        DoubleSqlValue(3.0)
+      )
+    )
+
+    val result = executor.select(
+      schemaName = schema,
+      tableName = table,
+      columns = List("LONG_COL", "DOUBLE_COL"),
+      criteria = List()
+    )
+    result.isRight shouldBe true
+    result.getOrElse() shouldBe expectedData
   }
 }

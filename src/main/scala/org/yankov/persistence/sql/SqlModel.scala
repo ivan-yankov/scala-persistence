@@ -10,7 +10,6 @@ object SqlModel {
     val float: String = "DOUBLE"
     val double: String = "DOUBLE"
     val boolean: String = "BOOLEAN"
-    val byte: String = "TINYINT"
     val bytes: String = "BLOB"
     val string: String = "CLOB"
 
@@ -46,19 +45,13 @@ object SqlModel {
 
   trait SqlValue
 
-  case class ShortSqlValue(value: Short) extends SqlValue
-
   case class IntSqlValue(value: Int) extends SqlValue
 
   case class LongSqlValue(value: Long) extends SqlValue
 
-  case class FloatSqlValue(value: Float) extends SqlValue
-
   case class DoubleSqlValue(value: Double) extends SqlValue
 
   case class BooleanSqlValue(value: Boolean) extends SqlValue
-
-  case class ByteSqlValue(value: Byte) extends SqlValue
 
   case class BytesSqlValue(value: Bytes) extends SqlValue
 

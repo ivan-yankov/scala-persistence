@@ -84,6 +84,7 @@ case class QueryExecutor(connection: Connection) {
       criteria
         .indices
         .toList
+        .map(x => x + 1)
         .zip(criteria)
         .foreach(x => setStatementValue(s, x._1, x._2.value))
 
@@ -114,32 +115,26 @@ case class QueryExecutor(connection: Connection) {
 
   private def selectQuery(schemaName: String, tableName: String, columns: List[String], criteria: List[Clause]): String = {
     val s = if (columns.nonEmpty) columns.mkString(",") else "*"
-    val c = if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?") else ""
+    val c = if (criteria.nonEmpty) criteria.map(x => s" ${x.name} ${x.column}${x.operator}?").mkString else ""
     s"SELECT $s FROM $schemaName.$tableName$c"
   }
 
   private def setStatementValue(s: PreparedStatement, i: Int, x: SqlValue): Unit = x match {
-    case ShortSqlValue(value) => s.setShort(i, value)
     case IntSqlValue(value) => s.setInt(i, value)
     case LongSqlValue(value) => s.setLong(i, value)
-    case FloatSqlValue(value) => s.setFloat(i, value)
     case DoubleSqlValue(value) => s.setDouble(i, value)
     case BooleanSqlValue(value) => s.setBoolean(i, value)
-    case ByteSqlValue(value) => s.setByte(i, value)
     case BytesSqlValue(value) => s.setBytes(i, value.value.toArray)
     case StringSqlValue(value) => s.setString(i, value)
   }
 
   private def getResultValue(result: ResultSet, columnName: String, columnType: Int): SqlValue = columnType match {
-    case Types.SMALLINT => ShortSqlValue(result.getShort(columnName))
     case Types.INTEGER => IntSqlValue(result.getInt(columnName))
     case Types.BIGINT => LongSqlValue(result.getLong(columnName))
-    case Types.REAL => FloatSqlValue(result.getFloat(columnName))
     case Types.FLOAT => DoubleSqlValue(result.getDouble(columnName))
     case Types.DOUBLE => DoubleSqlValue(result.getDouble(columnName))
     case Types.BIT => BooleanSqlValue(result.getBoolean(columnName))
     case Types.BOOLEAN => BooleanSqlValue(result.getBoolean(columnName))
-    case Types.TINYINT => ByteSqlValue(result.getByte(columnName))
     case Types.BINARY => BytesSqlValue(Bytes(result.getBytes(columnName).toList))
     case Types.VARBINARY => BytesSqlValue(Bytes(result.getBytes(columnName).toList))
     case Types.LONGVARBINARY => BytesSqlValue(Bytes(result.getBytes(columnName).toList))
@@ -154,16 +149,26 @@ case class QueryExecutor(connection: Connection) {
     values
       .indices
       .toList
+      .map(x => x + 1)
       .zip(values)
       .foreach(x => setStatementValue(s, x._1, x._2))
   }
 
-  private def getRow(result: ResultSet, schemaName: String, tableName: String, columnNames: List[String]): List[SqlValue] = {
-    columnNames
-      .map(x => {
-        val r = connection.getMetaData.getColumns(null, schemaName, tableName, x)
-        r.next()
-        getResultValue(result, r.getString(columnName), r.getInt(dataType))
-      })
+  private def getRow(result: ResultSet, schemaName: String, tableName: String, columns: List[String]): List[SqlValue] = {
+    val allTableColumnsResultSet = connection.getMetaData.getColumns(null, schemaName, tableName, null)
+
+    @tailrec
+    def getAllTableColumns(acc: List[(String, Int)]): List[(String, Int)] = {
+      if (!allTableColumnsResultSet.next()) acc
+      else getAllTableColumns(acc.appended((allTableColumnsResultSet.getString(columnName), allTableColumnsResultSet.getInt(dataType))))
+    }
+
+    val allTableColumns = getAllTableColumns(List())
+
+    val selectColumns = if (columns.nonEmpty) columns else allTableColumns.map(x => x._1)
+
+    allTableColumns
+      .filter(x => selectColumns.contains(x._1))
+      .map(x => getResultValue(result, x._1, x._2))
   }
 }
