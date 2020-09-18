@@ -43,7 +43,39 @@ object SqlModel {
     override def name: String = "OR"
   }
 
-  trait SqlValue
+  trait SqlValue {
+    private def msg(x: String) = s"Value is not [$x]"
+
+    def asInt: Int = this match {
+      case IntSqlValue(value) => value
+      case _ => throw new UnsupportedOperationException(msg("Int"))
+    }
+
+    def asLong: Long = this match {
+      case LongSqlValue(value) => value
+      case _ => throw new UnsupportedOperationException(msg("Long"))
+    }
+
+    def asDouble: Double = this match {
+      case DoubleSqlValue(value) => value
+      case _ => throw new UnsupportedOperationException(msg("Double"))
+    }
+
+    def asBoolean: Boolean = this match {
+      case BooleanSqlValue(value) => value
+      case _ => throw new UnsupportedOperationException(msg("Boolean"))
+    }
+
+    def asBytes: Bytes = this match {
+      case BytesSqlValue(value) => value
+      case _ => throw new UnsupportedOperationException(msg("Bytes"))
+    }
+
+    def asString: String = this match {
+      case StringSqlValue(value) => value
+      case _ => throw new UnsupportedOperationException(msg("String"))
+    }
+  }
 
   case class IntSqlValue(value: Int) extends SqlValue
 
