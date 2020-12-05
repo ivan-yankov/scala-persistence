@@ -2,20 +2,12 @@ package org.yankov.persistence.sql
 
 import java.sql.{Connection, Types}
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import org.yankov.datastructures.Types.Bytes
 import org.yankov.persistence.sql.SqlModel._
 
-class QueryExecutorTest extends WordSpec with Matchers {
-  private def createDatabase(name: String): Connection = {
-    val connectionString = ConnectionStringFactory.createDerbyConnectionString(
-      InMemoryDatabaseProtocol,
-      name,
-      Map("create" -> "true")
-    )
-
-    DatabaseConnection.connect(connectionString).getOrElse().asInstanceOf[Connection]
-  }
+class QueryExecutorTest extends WordSpec with Matchers with BeforeAndAfterAll {
+  override def beforeAll(): Unit = System.setSecurityManager(null)
 
   "create schema, create table and drop table should succeed" in {
     val executor = QueryExecutor(createDatabase("test-schema-table"))
@@ -434,5 +426,15 @@ class QueryExecutorTest extends WordSpec with Matchers {
     val result = executor.select(schema, table)
     result.isRight shouldBe true
     result.getOrElse() shouldBe expectedData
+  }
+
+  private def createDatabase(name: String): Connection = {
+    val connectionString = ConnectionStringFactory.createDerbyConnectionString(
+      InMemoryDatabaseProtocol,
+      name,
+      Map("create" -> "true")
+    )
+
+    DatabaseConnection.connect(connectionString).getOrElse().asInstanceOf[Connection]
   }
 }
