@@ -1,6 +1,6 @@
 name := "scala-persistence"
 
-version := "1.0"
+version := "2.0"
 
 scalaVersion := "2.13.3"
 
@@ -22,3 +22,5 @@ assemblyMergeStrategy in assembly := {
   case PathList("META-INF", _ @ _*) => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
+
+scalacOptions ++= Seq("-deprecation", "-feature")
